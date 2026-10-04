@@ -1,27 +1,52 @@
 #!/usr/bin/env python3
-"""Read-only update preflight from the cached public plugin."""
+"""Check cached plugin compatibility without requiring a managed installation."""
 import json
 import os
 from pathlib import Path
 import subprocess
 import sys
+from platform_support import safe_path, managed_installation_owned
+from version_check import check
 
-home=Path(os.environ.get('CODEX_HOME',str(Path.home()/'.codex'))).expanduser().absolute()
-destination=home/'academic-writing-distribution'
-marker=home/'academic-writing-install.json'
-installer=destination/'scripts/manage.py'
-for path in (home,destination,marker,installer):
-    if any(parent.is_symlink() for parent in (path,*path.parents)):
-        sys.exit('Unsafe managed installer path; update check was not run')
-try:
-    if json.loads(marker.read_text())!={'selector':'academic-writing@academic-writing-public','destination':str(destination)}:
-        raise ValueError()
-    manifest=Path(__file__).resolve().parents[1]/'.codex-plugin/plugin.json'
-    loaded=json.loads(manifest.read_text())['version']
-except (OSError,ValueError,KeyError):
-    sys.exit('Managed updater unavailable. Install the public client bundle first; compatibility is unknown.')
-try:
-    result=subprocess.run([sys.executable,str(installer),'check-update','--home',str(home),'--current-version',loaded],timeout=30)
-except (OSError,subprocess.TimeoutExpired):
-    sys.exit('Update check unavailable or timed out; compatibility could not be checked.')
-sys.exit(result.returncode)
+
+def run(plugin=None, home=None):
+    plugin = safe_path(plugin or Path(__file__).absolute().parents[1])
+    home = safe_path(home or Path(os.environ.get('CODEX_HOME', str(Path.home() / '.codex'))))
+    manifest = json.loads((plugin / '.codex-plugin/plugin.json').read_text(encoding='utf-8'))
+    if manifest.get('name') != 'academic-writing':
+        raise ValueError('Unexpected plugin identity')
+    loaded = manifest['version']
+    destination = home / 'academic-writing-distribution'
+    marker = safe_path(home / 'academic-writing-install.json')
+    installer = safe_path(destination / 'scripts/manage.py')
+    owned = False
+    if marker.is_file():
+        try:
+            owned = managed_installation_owned(json.loads(marker.read_text(encoding='utf-8')), destination)
+        except ValueError:
+            pass
+    if owned:
+        if not installer.is_file():
+            raise ValueError('Managed installer is missing; repair the managed installation')
+        result = subprocess.run([sys.executable, str(installer), 'check-update', '--home', str(home), '--current-version', loaded], timeout=30, capture_output=True, text=True)
+        if result.returncode:
+            raise ValueError('Managed compatibility check failed')
+        report = json.loads(result.stdout)
+        report['installation_mode'] = 'managed'
+        print(json.dumps(report, ensure_ascii=True))
+        return 0 if report.get('may_continue') is True else 1
+    report = check(loaded, home)
+    print(json.dumps(report, ensure_ascii=True))
+    return 0 if report['may_continue'] else 1
+
+
+def main():
+    try:
+        return run()
+    except (OSError, ValueError, KeyError, subprocess.TimeoutExpired):
+        print('Plugin compatibility unknown: check Python, local paths and connectivity. No installation changed.', file=sys.stderr)
+        return 1
+
+
+if __name__ == '__main__':
+    sys.exit(main())

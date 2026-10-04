@@ -1,5 +1,5 @@
 {
-  "client_version": "0.1.10",
+  "client_version": "0.1.11",
   "api_contract": "ieee-guidance-v1",
   "supported_api_major": 0,
   "legacy_api_major": 1,

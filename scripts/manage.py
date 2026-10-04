@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+from platform_support import safe_path, codex_binary, managed_installation_owned
 from codex_app import App
 from connection import CheckError, Connection
 
@@ -18,7 +19,7 @@ SKILLS = (SKILL, 'academic-writing:ieee-related-work-mcp', 'academic-writing:iee
 
 def run(codex, args, env):
     try:
-        result = subprocess.run([codex, *args, '--json'], env=env, capture_output=True, text=True, timeout=40)
+        result = subprocess.run([codex_binary(codex, env), *args, '--json'], env=env, capture_output=True, text=True, timeout=40)
     except (OSError, subprocess.TimeoutExpired):
         raise CheckError('Codex CLI unavailable or timed out. Install/update Codex CLI and retry.') from None
     if result.returncode:
@@ -37,11 +38,11 @@ def check(destination, codex, env, inventory_only=False):
         skills = [s['name'] for entry in listing['data'] for s in entry['skills'] if s['name'] in SKILLS and s['enabled']]
         if sorted(skills) != sorted(SKILLS):
             raise CheckError('Thin skill was not discovered. Refresh or restart Codex.')
-        installed_version = json.loads((destination / 'plugins/academic-writing/.codex-plugin/plugin.json').read_text())['version']
+        installed_version = json.loads((destination / 'plugins/academic-writing/.codex-plugin/plugin.json').read_text(encoding='utf-8'))['version']
         if state['summary'].get('localVersion') != installed_version:
             raise CheckError('Codex installed version does not match the managed package')
         cached = Path(env['CODEX_HOME']) / 'plugins/cache/academic-writing-public/academic-writing' / installed_version / '.codex-plugin/plugin.json'
-        if cached.is_symlink() or not cached.is_file() or json.loads(cached.read_text()).get('version') != installed_version:
+        if cached.is_symlink() or not cached.is_file() or json.loads(cached.read_text(encoding='utf-8')).get('version') != installed_version:
             raise CheckError('Codex cached plugin version was not refreshed')
         report = {'installed': True, 'client_version': installed_version, 'entrypoint': SKILL, 'entrypoints': list(SKILLS), 'model_calls': 0}
         if not inventory_only:
@@ -49,7 +50,7 @@ def check(destination, codex, env, inventory_only=False):
             servers = [s for s in status['data'] if s.get('pluginId') == SELECTOR]
             if len(servers) != 1 or set(servers[0]['tools']) != {'get_writing_guidance'}:
                 raise CheckError('Codex did not connect to the plugin MCP. Check public access and refresh Codex.')
-            config = json.loads((destination / 'plugins/academic-writing/.mcp.json').read_text())
+            config = json.loads((destination / 'plugins/academic-writing/.mcp.json').read_text(encoding='utf-8'))
             report.update(Connection(config['mcpServers']['ieee_guidance']['url']).check())
         else:
             report['connection'] = 'not tested (inventory-only developer check)'
@@ -59,13 +60,14 @@ def check(destination, codex, env, inventory_only=False):
 
 
 def manage(action, *, package=PACKAGE, codex='codex', home=None, inventory_only=False, confirm=False, expected_version=None, current_version=None, defer=False):
-    home = Path(home or os.environ.get('CODEX_HOME', Path.home() / '.codex')).expanduser().resolve()
+    home = safe_path(Path(home or os.environ.get('CODEX_HOME', Path.home() / '.codex')))
     home.mkdir(parents=True, exist_ok=True)
     env = dict(os.environ, CODEX_HOME=str(home))
     for key in ('OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'CODEX_API_KEY', 'IEEE_MCP_ACCESS_TOKEN'):
         env.pop(key, None)
     marker = home / 'academic-writing-install.json'
     destination = home / 'academic-writing-distribution'
+    safe_path(destination); safe_path(marker)
     if destination.is_symlink() or marker.is_symlink():
         raise CheckError('Managed installation paths must not be symbolic links')
     legacy_marker = home / 'ieee-writing-install.json'
@@ -93,15 +95,15 @@ def manage(action, *, package=PACKAGE, codex='codex', home=None, inventory_only=
                 target.parent.mkdir(parents=True,exist_ok=True)
                 shutil.copyfile(package/relative,target)
             marker.write_text(json.dumps({'selector': SELECTOR, 'destination': str(destination)}) + '\n')
-        elif not marker.exists():
+        elif not marker.exists() or not managed_installation_owned(json.loads(marker.read_text(encoding='utf-8')), destination):
             raise CheckError('Installation destination is not owned by this tool')
         run(codex, ['plugin', 'marketplace', 'add', str(destination)], env)
         run(codex, ['plugin', 'add', SELECTOR], env)
         return check(destination, codex, env, inventory_only)
     if not marker.exists():
         raise CheckError('No installation owned by this tool. Nothing was removed.')
-    state = json.loads(marker.read_text())
-    if state != {'selector': SELECTOR, 'destination': str(destination)}:
+    state = json.loads(marker.read_text(encoding='utf-8'))
+    if not managed_installation_owned(state, destination):
         raise CheckError('Installation ownership metadata is invalid')
     if action in ('check-update', 'update'):
         from updates import check_update, update

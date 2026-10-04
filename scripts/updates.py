@@ -1,5 +1,4 @@
 """Public client updates: fixed GitHub release metadata, explicit consent and rollback."""
-import fcntl
 import hashlib
 import json
 import os
@@ -13,8 +12,9 @@ from urllib.parse import urlsplit
 from urllib.request import Request, build_opener, HTTPRedirectHandler
 import zipfile
 from connection import CheckError
+from platform_support import safe_path, exclusive_lock, managed_installation_owned
 
-ALLOWED = frozenset(['.agents/plugins/marketplace.json', 'README.md', 'compatibility.json', 'examples/context.md', 'examples/introduction.tex', 'examples/related-work-context.md', 'examples/related-work.tex', 'plugins/academic-writing/.codex-plugin/plugin.json', 'plugins/academic-writing/.mcp.json', 'plugins/academic-writing/README.md', 'plugins/academic-writing/scripts/bridge.py', 'plugins/academic-writing/skills/ieee-execution-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-execution-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/ieee-figure-prompt-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-figure-prompt-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/ieee-introduction-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-introduction-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/ieee-language-polish-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-language-polish-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/ieee-related-work-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-related-work-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/ieee-results-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-results-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/ieee-system-model-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-system-model-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/ieee-whole-paper-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-whole-paper-mcp/agents/openai.yaml', 'scripts/codex_app.py', 'scripts/connection.py', 'scripts/manage.py', 'scripts/run_writing_acceptance.py', 'scripts/updates.py', 'plugins/academic-writing/scripts/preflight.py'])
+ALLOWED = frozenset(['.agents/plugins/marketplace.json', 'README.md', 'compatibility.json', 'examples/context.md', 'examples/introduction.tex', 'examples/related-work-context.md', 'examples/related-work.tex', 'plugins/academic-writing/.codex-plugin/plugin.json', 'plugins/academic-writing/.mcp.json', 'plugins/academic-writing/README.md', 'plugins/academic-writing/scripts/bridge.py', 'plugins/academic-writing/skills/ieee-execution-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-execution-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/ieee-figure-prompt-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-figure-prompt-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/ieee-introduction-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-introduction-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/ieee-language-polish-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-language-polish-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/ieee-related-work-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-related-work-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/ieee-results-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-results-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/ieee-system-model-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-system-model-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/ieee-whole-paper-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-whole-paper-mcp/agents/openai.yaml', 'scripts/codex_app.py', 'scripts/connection.py', 'scripts/manage.py', 'scripts/run_writing_acceptance.py', 'scripts/updates.py', 'scripts/platform_support.py', 'scripts/version_check.py', 'plugins/academic-writing/scripts/platform_support.py', 'plugins/academic-writing/scripts/version_check.py', 'plugins/academic-writing/scripts/preflight.py'])
 MAX_PACKAGE = 1048576
 MAX_EXPANDED = 2097152
 GITHUB = 'https://github.com/TerryZhang95/academic-writing-plugin'
@@ -27,22 +27,23 @@ class NoRedirect(HTTPRedirectHandler):
         raise CheckError('Update redirects are forbidden')
 
 def safe(path):
-    if any(p.is_symlink() for p in (path, *path.parents)):
-        raise CheckError('Update paths must not contain symbolic links')
-    return path
+    try:
+        return safe_path(path)
+    except ValueError:
+        raise CheckError('Update paths must not contain links or reparse points') from None
 
 def owned(home):
     safe(home)
     dest=safe(home/'academic-writing-distribution')
     marker=safe(home/'academic-writing-install.json')
-    if not marker.is_file() or json.loads(marker.read_text()) != {'selector':'academic-writing@academic-writing-public','destination':str(dest)}:
+    if not marker.is_file() or not managed_installation_owned(json.loads(marker.read_text(encoding='utf-8')), dest):
         raise CheckError('Install with the public managed installer before checking updates')
     state=safe(home/'academic-writing-updates')
     state.mkdir(mode=0o700, exist_ok=True)
     return dest,state
 
 def origin(dest):
-    url=json.loads((dest/'plugins/academic-writing/.mcp.json').read_text())['mcpServers']['ieee_guidance']['url']
+    url=json.loads((dest/'plugins/academic-writing/.mcp.json').read_text(encoding='utf-8'))['mcpServers']['ieee_guidance']['url']
     parts=urlsplit(url)
     if parts.scheme!='https' or not parts.hostname or parts.username or parts.password or parts.path!='/mcp' or parts.query or parts.fragment:
         raise CheckError('Updates require the trusted HTTPS MCP installation')
@@ -99,13 +100,13 @@ def validate_metadata(data, base):
     return data
 
 def current(dest):
-    return json.loads((dest/'plugins/academic-writing/.codex-plugin/plugin.json').read_text())['version']
+    return json.loads((dest/'plugins/academic-writing/.codex-plugin/plugin.json').read_text(encoding='utf-8'))['version']
 
 def check_update(home, *, loaded_version=None, defer=False, force=False):
     dest,state=owned(home); origin(dest); base=GITHUB; cache=safe(state/'check.json')
     saved={}
     if cache.exists():
-        try: saved=json.loads(cache.read_text())
+        try: saved=json.loads(cache.read_text(encoding='utf-8'))
         except (ValueError,OSError): pass
     if not isinstance(saved,dict) or not isinstance(saved.get('checked_at',0),(int,float)):
         saved={}
@@ -158,8 +159,8 @@ def extract(data, stage, expected, base):
             raise CheckError('Package version/inventory mismatch')
         if origin(stage)!=base:
             raise CheckError('Package changes the trusted MCP service')
-        catalog=json.loads((stage/'.agents/plugins/marketplace.json').read_text())
-        if catalog.get('name')!='academic-writing-public' or len(catalog.get('plugins',[]))!=1 or catalog['plugins'][0].get('name')!='academic-writing' or json.loads((stage/'plugins/academic-writing/.codex-plugin/plugin.json').read_text()).get('name')!='academic-writing' or catalog['plugins'][0].get('source')!={'source':'local','path':'./plugins/academic-writing'}:
+        catalog=json.loads((stage/'.agents/plugins/marketplace.json').read_text(encoding='utf-8'))
+        if catalog.get('name')!='academic-writing-public' or len(catalog.get('plugins',[]))!=1 or catalog['plugins'][0].get('name')!='academic-writing' or json.loads((stage/'plugins/academic-writing/.codex-plugin/plugin.json').read_text(encoding='utf-8')).get('name')!='academic-writing' or catalog['plugins'][0].get('source')!={'source':'local','path':'./plugins/academic-writing'}:
             raise CheckError('Package changes marketplace ownership')
 
 def _update(home, *, confirm, expected_version, install_check):
@@ -198,8 +199,8 @@ def _update(home, *, confirm, expected_version, install_check):
 def update(home, **options):
     _,state=owned(home)
     lock=safe(state/'update.lock')
-    with lock.open('a') as handle:
-        try: fcntl.flock(handle,fcntl.LOCK_EX|fcntl.LOCK_NB)
-        except BlockingIOError:
-            raise CheckError('Another client upgrade is running') from None
-        return _update(home,**options)
+    try:
+        with exclusive_lock(lock):
+            return _update(home,**options)
+    except BlockingIOError:
+        raise CheckError('Another client upgrade is running') from None

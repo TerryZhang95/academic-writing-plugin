@@ -9,6 +9,7 @@ import subprocess
 import tempfile
 from connection import CheckError, Connection
 from manage import PACKAGE, SELECTOR, manage
+from platform_support import codex_binary
 
 OPERATIONS = ('polish', 'revise_contributions', 'revise', 'audit')
 
@@ -104,16 +105,16 @@ def run(output, *, codex='codex', model=None, home=None, package=PACKAGE, allow_
     output.mkdir(parents=True)
     try:
         if allow_local_skills_smoke:
-            endpoint = json.loads((installed / 'plugins/academic-writing/.mcp.json').read_text())['mcpServers']['ieee_guidance']['url']
+            endpoint = json.loads((installed / 'plugins/academic-writing/.mcp.json').read_text(encoding='utf-8'))['mcpServers']['ieee_guidance']['url']
             connection = Connection(endpoint).check()
         else:
             connection = manage('check', codex=codex, home=home)
     except CheckError as error:
         (output / 'report.md').write_text('# Writing acceptance\n\nNot run: connection self-check failed.\n\n' + str(error) + '\n')
         return False
-    manifest = json.loads((installed / 'plugins/academic-writing/.codex-plugin/plugin.json').read_text())
-    context = (package / 'examples/context.md').read_text()
-    source = (package / 'examples/introduction.tex').read_text()
+    manifest = json.loads((installed / 'plugins/academic-writing/.codex-plugin/plugin.json').read_text(encoding='utf-8'))
+    context = (package / 'examples/context.md').read_text(encoding='utf-8')
+    source = (package / 'examples/introduction.tex').read_text(encoding='utf-8')
     env = dict(os.environ, CODEX_HOME=str(home))
     for key in ('OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'CODEX_API_KEY', 'IEEE_MCP_ACCESS_TOKEN'):
         env.pop(key, None)

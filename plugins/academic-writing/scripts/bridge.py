@@ -12,6 +12,8 @@ import urllib.error
 import urllib.request
 from urllib.parse import urlsplit, urlencode
 
+from platform_support import safe_path
+
 MAX_INPUT = 256_000
 OUTPUTS = {'references': {'references.json','references.md'}, 'plot': {'figure.png','figure.pdf','figure.json'}}
 SENSITIVE = {'.ssh','.aws','.codex','.git','.env','.config','.gnupg','auth.json','credentials','id_rsa','id_ed25519'}
@@ -27,8 +29,10 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
 
 
 def plain(path):
-    if path.is_symlink() or any(p.is_symlink() for p in path.parents):
-        raise BridgeError('Symlinks are not allowed')
+    try:
+        path = safe_path(path)
+    except ValueError:
+        raise BridgeError('Links and Windows reparse points are not allowed') from None
     if any(part.lower() in SENSITIVE or part.lower().endswith(('.pem','.key','.p12')) for part in path.parts):
         raise BridgeError('Sensitive paths are not allowed')
     return path
