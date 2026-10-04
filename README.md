@@ -134,21 +134,3 @@ python3 ~/.codex/academic-writing-distribution/scripts/manage.py uninstall
 ```
 
 In PowerShell, set `$manager` as shown above and run `py -3 $manager uninstall`.
-
-## Codex home and troubleshooting
-
-The App and CLI share installation state when they use the same Codex home. If you set `CODEX_HOME`, set it before installation and before launching Codex. Restart an App that is already running. Use one installation method for this marketplace within each Codex home.
-
-For example, to use a separate home in PowerShell, run this from the extracted ZIP folder:
-
-```powershell
-$env:CODEX_HOME = Join-Path $env:USERPROFILE 'codex-academic'
-py -3 scripts/manage.py install
-Set-Location $env:USERPROFILE
-$manager = Join-Path $env:CODEX_HOME 'academic-writing-distribution\scripts\manage.py'
-py -3 $manager check
-```
-
-Use that `$manager` path for later checks, updates and removal. For a native CLI installation, set `CODEX_HOME` before running the marketplace commands instead.
-
-If skills are missing, restart Codex and open a new chat. If a connection check fails, check Python, your internet connection and service availability. If the service returns HTTP 429, wait before retrying. If an update reports files in use, close terminals or App sessions using the installation folder and retry.
