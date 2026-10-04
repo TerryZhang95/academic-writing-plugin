@@ -54,18 +54,9 @@ If Codex CLI is outside your `PATH`, pass its executable with `--codex "/path/to
 
 Ask Codex to use **Academic Writing** and provide the text or files for the task.
 
-| Task | Example request |
-| --- | --- |
-| Introduction | “Use Academic Writing to revise the Introduction in paper.tex.” |
-| Related Work | “Organize this Related Work around the research directions and gaps.” |
-| System Model | “Check the System Model for missing assumptions and inconsistent notation.” |
-| Results | “Revise the discussion of these results using the figures and data I provide.” |
-| Whole manuscript | “Review the structure of this manuscript and revise the Abstract.” |
-| Language polishing | “Polish this paragraph while preserving its meaning and structure.” |
-| Schematics | “Prepare a figure prompt for this system architecture.” |
-| References and plots | “Check refs.bib against paper.tex” or “Plot data.csv with load on the x-axis and throughput on the y-axis.” |
+The eight skills cover Introduction, Related Work, System Model, Results, whole-manuscript structure, language polishing, schematic guidance, and reference checks/CSV plots.
 
-For DOI verification, ask for it explicitly. For a plot, specify the file, columns and chart type. Sample writing inputs are in `examples/`.
+For DOI verification, ask for it explicitly. For a plot, specify the file, columns and chart type.
 
 Python is required for the startup version check and reference/plot helpers, including when you install through the App or CLI. The local scripts use the Python standard library. Your Codex account supplies the writing model; no separate model API key is needed.
 
