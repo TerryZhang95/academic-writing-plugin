@@ -69,7 +69,7 @@ def files(root, names, kind):
 
 def endpoint():
     config = Path(__file__).resolve().parents[1] / '.mcp.json'
-    url = json.loads(config.read_text())['mcpServers']['ieee_guidance']['url']
+    url = json.loads(config.read_text())['mcpServers']['academic_guidance']['url']
     parts = urlsplit(url)
     if parts.scheme != 'https' or parts.path != '/mcp' or not parts.hostname or parts.username or parts.password or parts.query or parts.fragment:
         raise BridgeError('Installed public HTTPS connection required')
@@ -77,7 +77,7 @@ def endpoint():
 
 
 def request(url, payload=None, credential=None, binary=False):
-    headers = {'Accept':'application/octet-stream' if binary else 'application/json'}
+    headers = {'X-Academic-Client': 'academic-execution-v1', 'Accept':'application/octet-stream' if binary else 'application/json'}
     if credential:
         headers['X-Task-Secret'] = credential
     data = None if payload is None else json.dumps(payload, ensure_ascii=False).encode()
@@ -186,7 +186,7 @@ def run(args):
         raise BridgeError('Choose a new visible output directory inside the task directory')
     base = endpoint()
     info = request(base)
-    if info.get('task_contract') != 'ieee-execution-v1':
+    if info.get('task_contract') != 'academic-execution-v1':
         raise BridgeError('Execution service is unavailable; upgrade the installed plugin')
     pin = args.library_release or info['library_release']
     if args.task=='references':

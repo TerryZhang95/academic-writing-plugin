@@ -2,7 +2,7 @@
 
 Academic writing, prose polishing, reference checks and figure tools for Codex CLI and Codex App. Uses the same plugin and remote MCP service on both surfaces. Local helper scripts require Python 3.9+ (Python 3.11 or newer recommended).
 
-Client version: **0.1.11**. Installation and actual writing, reference-check and plotting workflows have passed acceptance.
+Client version: **0.1.12**. Installation and actual writing, reference-check and plotting workflows have passed acceptance.
 
 ## Native CLI installation
 
@@ -25,7 +25,7 @@ The App and CLI must use the same local Codex home to share installation state. 
 
 ## Optional managed installation
 
-Download `academic-writing-public-0.1.11.zip` from [Releases](https://github.com/TerryZhang95/academic-writing-plugin/releases/latest) and extract it. Run from the extracted `academic-writing` folder.
+Download `academic-writing-public-0.1.12.zip` from [Releases](https://github.com/TerryZhang95/academic-writing-plugin/releases/latest) and extract it. Run from the extracted `academic-writing` folder.
 
 macOS:
 
@@ -102,4 +102,4 @@ py -3 $manager check-update
 
 Set `CODEX_HOME` before launching Codex and restart an already running App so it can use the intended context. For native CLI installation, set the same variable before running the marketplace/plugin commands above. On macOS use `python3` and the same managed script/actions. Native installations cannot be updated or uninstalled by this tool. Concurrent upgrades are refused; a failed replacement restores the previous installation. If Windows reports files in use, close affected shells/App sessions and retry. Upgrading never silently switches the rules version of an existing task.
 
-For old `ieee-writing` installations, uninstall with the old installer before installing the renamed plugin. If a request returns HTTP 429, wait and explicitly retry. Restart Codex when an installed tool is missing; connection checks do not measure writing quality.
+For managed versions through 0.1.11, download 0.1.12, uninstall with the previous installer, then install with the new installer. The renamed skill inventory requires this one-time reinstall; the previous updater remains pinned to its compatible package. Native installations use the refresh/reinstall process above. Start a new chat after upgrading. If a request returns HTTP 429, wait and explicitly retry. Restart Codex when an installed tool is missing; connection checks do not measure writing quality.

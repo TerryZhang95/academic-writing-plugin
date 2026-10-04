@@ -13,8 +13,8 @@ from connection import CheckError, Connection
 PACKAGE = Path(__file__).resolve().parents[1]
 SELECTOR = 'academic-writing@academic-writing-public'
 MARKET = 'academic-writing-public'
-SKILL = 'academic-writing:ieee-introduction-mcp'
-SKILLS = (SKILL, 'academic-writing:ieee-related-work-mcp', 'academic-writing:ieee-system-model-mcp', 'academic-writing:ieee-results-mcp', 'academic-writing:ieee-whole-paper-mcp', 'academic-writing:ieee-execution-mcp', 'academic-writing:ieee-language-polish-mcp', 'academic-writing:ieee-figure-prompt-mcp')
+SKILL = 'academic-writing:academic-introduction-mcp'
+SKILLS = (SKILL, 'academic-writing:academic-related-work-mcp', 'academic-writing:academic-system-model-mcp', 'academic-writing:academic-results-mcp', 'academic-writing:academic-whole-paper-mcp', 'academic-writing:academic-execution-mcp', 'academic-writing:academic-language-polish-mcp', 'academic-writing:academic-figure-prompt-mcp')
 
 
 def run(codex, args, env):
@@ -51,7 +51,7 @@ def check(destination, codex, env, inventory_only=False):
             if len(servers) != 1 or set(servers[0]['tools']) != {'get_writing_guidance'}:
                 raise CheckError('Codex did not connect to the plugin MCP. Check public access and refresh Codex.')
             config = json.loads((destination / 'plugins/academic-writing/.mcp.json').read_text(encoding='utf-8'))
-            report.update(Connection(config['mcpServers']['ieee_guidance']['url']).check())
+            report.update(Connection(config['mcpServers']['academic_guidance']['url']).check())
         else:
             report['connection'] = 'not tested (inventory-only developer check)'
         return report
@@ -63,16 +63,16 @@ def manage(action, *, package=PACKAGE, codex='codex', home=None, inventory_only=
     home = safe_path(Path(home or os.environ.get('CODEX_HOME', Path.home() / '.codex')))
     home.mkdir(parents=True, exist_ok=True)
     env = dict(os.environ, CODEX_HOME=str(home))
-    for key in ('OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'CODEX_API_KEY', 'IEEE_MCP_ACCESS_TOKEN'):
+    for key in (set(os.environ) & {'OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'CODEX_API_KEY'}) | {key for key in os.environ if key.endswith('_MCP_ACCESS_TOKEN')}:
         env.pop(key, None)
     marker = home / 'academic-writing-install.json'
     destination = home / 'academic-writing-distribution'
     safe_path(destination); safe_path(marker)
     if destination.is_symlink() or marker.is_symlink():
         raise CheckError('Managed installation paths must not be symbolic links')
-    legacy_marker = home / 'ieee-writing-install.json'
-    if legacy_marker.exists() or legacy_marker.is_symlink():
-        raise CheckError('Previous ieee-writing installation detected. Uninstall with the old installer, then install this Academic Writing bundle.')
+    legacy_markers = [path for path in home.glob('*-writing-install.json') if path.name != 'academic-writing-install.json']
+    if legacy_markers:
+        raise CheckError('Previous writing plugin installation detected. Uninstall with the old installer, then install this Academic Writing bundle.')
     if action == 'install':
         known = run(codex, ['plugin', 'marketplace', 'list'], env)['marketplaces']
         for item in known:

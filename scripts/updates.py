@@ -14,11 +14,11 @@ import zipfile
 from connection import CheckError
 from platform_support import safe_path, exclusive_lock, managed_installation_owned
 
-ALLOWED = frozenset(['.agents/plugins/marketplace.json', 'README.md', 'compatibility.json', 'examples/context.md', 'examples/introduction.tex', 'examples/related-work-context.md', 'examples/related-work.tex', 'plugins/academic-writing/.codex-plugin/plugin.json', 'plugins/academic-writing/.mcp.json', 'plugins/academic-writing/README.md', 'plugins/academic-writing/scripts/bridge.py', 'plugins/academic-writing/skills/ieee-execution-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-execution-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/ieee-figure-prompt-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-figure-prompt-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/ieee-introduction-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-introduction-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/ieee-language-polish-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-language-polish-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/ieee-related-work-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-related-work-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/ieee-results-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-results-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/ieee-system-model-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-system-model-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/ieee-whole-paper-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-whole-paper-mcp/agents/openai.yaml', 'scripts/codex_app.py', 'scripts/connection.py', 'scripts/manage.py', 'scripts/run_writing_acceptance.py', 'scripts/updates.py', 'scripts/platform_support.py', 'scripts/version_check.py', 'plugins/academic-writing/scripts/platform_support.py', 'plugins/academic-writing/scripts/version_check.py', 'plugins/academic-writing/scripts/preflight.py'])
+ALLOWED = frozenset(['.agents/plugins/marketplace.json', 'README.md', 'compatibility.json', 'examples/context.md', 'examples/introduction.tex', 'examples/related-work-context.md', 'examples/related-work.tex', 'plugins/academic-writing/.codex-plugin/plugin.json', 'plugins/academic-writing/.mcp.json', 'plugins/academic-writing/README.md', 'plugins/academic-writing/scripts/bridge.py', 'plugins/academic-writing/skills/academic-execution-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-execution-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-figure-prompt-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-figure-prompt-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-introduction-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-introduction-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-language-polish-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-language-polish-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-related-work-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-related-work-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-results-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-results-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-system-model-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-system-model-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-whole-paper-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-whole-paper-mcp/agents/openai.yaml', 'scripts/codex_app.py', 'scripts/connection.py', 'scripts/manage.py', 'scripts/run_writing_acceptance.py', 'scripts/updates.py', 'scripts/platform_support.py', 'scripts/version_check.py', 'plugins/academic-writing/scripts/platform_support.py', 'plugins/academic-writing/scripts/version_check.py', 'plugins/academic-writing/scripts/preflight.py'])
 MAX_PACKAGE = 1048576
 MAX_EXPANDED = 2097152
 GITHUB = 'https://github.com/TerryZhang95/academic-writing-plugin'
-RELEASE_METADATA = GITHUB + '/releases/latest/download/release.json'
+RELEASE_METADATA = GITHUB + '/releases/latest/download/academic-release.json'
 CACHE_SECONDS = 600
 OFFLINE_SECONDS = 86400
 
@@ -43,7 +43,7 @@ def owned(home):
     return dest,state
 
 def origin(dest):
-    url=json.loads((dest/'plugins/academic-writing/.mcp.json').read_text(encoding='utf-8'))['mcpServers']['ieee_guidance']['url']
+    url=json.loads((dest/'plugins/academic-writing/.mcp.json').read_text(encoding='utf-8'))['mcpServers']['academic_guidance']['url']
     parts=urlsplit(url)
     if parts.scheme!='https' or not parts.hostname or parts.username or parts.password or parts.path!='/mcp' or parts.query or parts.fragment:
         raise CheckError('Updates require the trusted HTTPS MCP installation')
@@ -87,7 +87,7 @@ def version(value):
     return tuple(map(int,value.split('.')))
 
 def validate_metadata(data, base):
-    if not isinstance(data,dict) or data.get('schema_version')!=1 or data.get('client_contract')!='ieee-client-0.1':
+    if not isinstance(data,dict) or data.get('schema_version')!=1 or data.get('client_contract')!='academic-client-0.1':
         raise CheckError('Unknown client update contract')
     latest=data.get('latest_version'); minimum=data.get('minimum_compatible_version')
     if version(latest) is None or version(minimum) is None or version(minimum)>version(latest):

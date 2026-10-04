@@ -1,0 +1,4 @@
+interface:
+  display_name: "Academic Language Polish (MCP)"
+  short_description: "Scoped private guidance with your own client model"
+  default_prompt: "Use $academic-language-polish-mcp for my requested task."

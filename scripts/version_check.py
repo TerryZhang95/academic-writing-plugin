@@ -9,7 +9,7 @@ from urllib.request import Request, build_opener, HTTPRedirectHandler
 from platform_support import safe_path
 
 GITHUB = 'https://github.com/TerryZhang95/academic-writing-plugin'
-METADATA = GITHUB + '/releases/latest/download/release.json'
+METADATA = GITHUB + '/releases/latest/download/academic-release.json'
 
 
 def version(value):
@@ -19,7 +19,7 @@ def version(value):
 
 
 def validate(data):
-    if not isinstance(data, dict) or data.get('schema_version') != 1 or data.get('client_contract') != 'ieee-client-0.1':
+    if not isinstance(data, dict) or data.get('schema_version') != 1 or data.get('client_contract') != 'academic-client-0.1':
         raise ValueError('Unknown update contract')
     latest = data.get('latest_version'); minimum = data.get('minimum_compatible_version')
     if version(minimum) > version(latest):

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Academic Introduction via MCP"
+  short_description: "Write Introductions using private MCP guidance"
+  default_prompt: "Use $academic-introduction-mcp to polish this Introduction through the Academic Writing plugin."

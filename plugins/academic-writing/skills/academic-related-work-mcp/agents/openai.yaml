@@ -1,0 +1,4 @@
+interface:
+  display_name: "Academic Related Work via MCP"
+  short_description: "Revise Related Work using private MCP guidance"
+  default_prompt: "Use $academic-related-work-mcp to revise this Related Work through the Academic Writing plugin."

@@ -26,7 +26,7 @@ def extract(events, operation):
         # Tool evidence comes from runtime events, not the model's prose.
         tool = item.get('tool', '')
         server = item.get('server', '')
-        if tool != 'get_writing_guidance' or 'ieee' not in server.lower():
+        if tool != 'get_writing_guidance' or 'academic' not in server.lower():
             continue
         arguments = item.get('arguments', {})
         if isinstance(arguments, str):
@@ -93,19 +93,19 @@ def run(output, *, codex='codex', model=None, home=None, package=PACKAGE, allow_
     for directory in (home / 'skills', home / 'plugins/cache'):
         if directory.is_dir():
             unwanted = [path for path in directory.rglob('SKILL.md')
-                        if ('ieee' in path.as_posix().lower() or 'paper-self-review' in path.as_posix().lower())
-                        and path.parent.name not in {'ieee-introduction-mcp', 'ieee-related-work-mcp', 'ieee-system-model-mcp', 'ieee-results-mcp', 'ieee-whole-paper-mcp', 'ieee-execution-mcp', 'ieee-language-polish-mcp', 'ieee-figure-prompt-mcp'}]
+                        if (path.parents[1].name == 'skills' or '-writing' in path.parent.name or 'paper-self-review' in path.as_posix().lower())
+                        and path.parent.name not in {'academic-introduction-mcp', 'academic-related-work-mcp', 'academic-system-model-mcp', 'academic-results-mcp', 'academic-whole-paper-mcp', 'academic-execution-mcp', 'academic-language-polish-mcp', 'academic-figure-prompt-mcp'}]
             if unwanted:
                 local_skills_detected = True
                 if not allow_local_skills_smoke:
-                    raise CheckError('Local IEEE skills detected; use an independently logged-in clean test user/home')
+                    raise CheckError('Local Academic skills detected; use an independently logged-in clean test user/home')
     output = Path(output).resolve()
     if output.exists():
         raise CheckError('Report directory already exists; choose a new path')
     output.mkdir(parents=True)
     try:
         if allow_local_skills_smoke:
-            endpoint = json.loads((installed / 'plugins/academic-writing/.mcp.json').read_text(encoding='utf-8'))['mcpServers']['ieee_guidance']['url']
+            endpoint = json.loads((installed / 'plugins/academic-writing/.mcp.json').read_text(encoding='utf-8'))['mcpServers']['academic_guidance']['url']
             connection = Connection(endpoint).check()
         else:
             connection = manage('check', codex=codex, home=home)
@@ -116,14 +116,14 @@ def run(output, *, codex='codex', model=None, home=None, package=PACKAGE, allow_
     context = (package / 'examples/context.md').read_text(encoding='utf-8')
     source = (package / 'examples/introduction.tex').read_text(encoding='utf-8')
     env = dict(os.environ, CODEX_HOME=str(home))
-    for key in ('OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'CODEX_API_KEY', 'IEEE_MCP_ACCESS_TOKEN'):
+    for key in (set(os.environ) & {'OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'CODEX_API_KEY'}) | {key for key in os.environ if key.endswith('_MCP_ACCESS_TOKEN')}:
         env.pop(key, None)
     reports = []
     with tempfile.TemporaryDirectory(prefix='academic-writing-case-') as workspace:
         for operation in OPERATIONS:
-            prompt = (f'Use $academic-writing:ieee-introduction-mcp from {SELECTOR}. Operation={operation}. '
+            prompt = (f'Use $academic-writing:academic-introduction-mcp from {SELECTOR}. Operation={operation}. '
                       'Obtain real plugin MCP rules: start, and check except polish. Use routing fields only. '
-                      'Do not read local IEEE skills, private repositories or service rules. '
+                      'Do not read local Academic skills, private repositories or service rules. '
                       'If MCP fails or returns 429 stop and report the failure; no fallback. '
                       'Return the revised Introduction as LaTeX (audit returns findings instead), actual check status and evidence gaps. '
                       'Preserve the approved two contributions. Do not add numerical evidence or sources.\n\n' + context + '\n\n' + source)

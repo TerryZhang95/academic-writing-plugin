@@ -21,6 +21,8 @@ class Connection:
         self.headers = {'Content-Type': 'application/json', 'Accept': 'application/json, text/event-stream'}
 
     def request(self, method, params=None, notification=False):
+        if method == 'tools/call' and params.get('name') == 'get_writing_guidance':
+            params = {**params, 'arguments': {**params['arguments'], 'client_contract': 'academic-guidance-v1'}}
         payload = {'jsonrpc': '2.0', 'method': method}
         if params is not None:
             payload['params'] = params
@@ -85,7 +87,7 @@ class Connection:
             raise CheckError('Invalid guidance API metadata; upgrade the service')
         contract = structured.get('api_contract')
         major = int(api.split('.')[0])
-        if not ((major == 0 and contract == 'ieee-guidance-v1') or (major == 1 and contract in (None, 'ieee-guidance-v1'))):
+        if not ((major == 0 and contract == 'academic-guidance-v1') or (major == 1 and contract in (None, 'academic-guidance-v1'))):
             raise CheckError('Unsupported guidance API contract; update the client before continuing')
         for field in ('mcp_version', 'library_release'):
             value = structured.get(field)

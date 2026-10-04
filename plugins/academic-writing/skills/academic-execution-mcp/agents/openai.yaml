@@ -1,0 +1,4 @@
+interface:
+  display_name: "Academic Reference & Figures (MCP)"
+  short_description: "Explicit supplied-file reference checks and fixed CSV plots"
+  default_prompt: "Use $academic-execution-mcp for my explicitly requested reference check or CSV figure task."

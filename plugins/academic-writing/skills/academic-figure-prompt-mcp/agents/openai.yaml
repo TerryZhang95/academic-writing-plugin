@@ -1,0 +1,4 @@
+interface:
+  display_name: "Academic Schematic Guidance (MCP)"
+  short_description: "Scoped private guidance with your own client model"
+  default_prompt: "Use $academic-figure-prompt-mcp for my requested task."

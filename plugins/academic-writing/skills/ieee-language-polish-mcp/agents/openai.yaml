@@ -1,4 +1,0 @@
-interface:
-  display_name: "IEEE Language Polish (MCP)"
-  short_description: "Scoped private guidance with your own client model"
-  default_prompt: "Use $ieee-language-polish-mcp for my requested task."

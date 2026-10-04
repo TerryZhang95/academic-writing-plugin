@@ -1,4 +1,0 @@
-interface:
-  display_name: "IEEE Results (MCP)"
-  short_description: "Results and caption evidence guidance"
-  default_prompt: "Use $ieee-results-mcp for this Results/Evaluation task."

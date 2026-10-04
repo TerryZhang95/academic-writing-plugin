@@ -1,4 +1,0 @@
-interface:
-  display_name: "IEEE Manuscript (MCP)"
-  short_description: "Manuscript and scoped shared guidance"
-  default_prompt: "Use $ieee-whole-paper-mcp for this manuscript or shared-rule task."

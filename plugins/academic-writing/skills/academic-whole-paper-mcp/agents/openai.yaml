@@ -1,0 +1,4 @@
+interface:
+  display_name: "Academic Manuscript (MCP)"
+  short_description: "Manuscript and scoped shared guidance"
+  default_prompt: "Use $academic-whole-paper-mcp for this manuscript or shared-rule task."
