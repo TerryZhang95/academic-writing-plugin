@@ -1,10 +1,8 @@
 # Academic Writing
 
-Academic Writing adds manuscript guidance, language polishing, reference checks and CSV plotting to Codex App and Codex CLI. Your Codex model writes and edits the manuscript using guidance from the remote MCP service.
+Academic Writing helps you plan, draft, revise and review research manuscripts in Codex App and Codex CLI. It provides section-specific guidance for Introductions, Related Work, System Models and Results, alongside whole-manuscript review, language polishing, reference checks, data plotting and schematic figure prompts.
 
 ## Install
-
-Choose one installation method. Both the App and CLI use the same plugin.
 
 ### Codex App
 
@@ -26,11 +24,11 @@ codex plugin add academic-writing@academic-writing-public
 
 The commands also work in PowerShell. Start a new Codex session after installation.
 
-To install from a ZIP, replace the GitHub source in the first command with the path to the extracted `academic-writing` folder. Keep the second command unchanged.
+To install from a ZIP, replace the GitHub source in the first command with the path to the extracted `academic-writing` folder. 
 
 ### Python installer
 
-Use this method if you want to manage installation, checks, updates and removal with the included script. It requires Codex CLI and Python 3.9 or newer; Python 3.11 or newer is recommended.
+Use this method if you want to manage installation, checks, updates and removal with the included script. It requires Codex CLI. Python 3.11 or newer is recommended.
 
 Download [academic-writing-public-0.1.12.zip](https://github.com/TerryZhang95/academic-writing-plugin/releases/download/v0.1.12/academic-writing-public-0.1.12.zip), extract it, and open a terminal in the extracted `academic-writing` folder.
 
@@ -54,13 +52,9 @@ If Codex CLI is outside your `PATH`, pass its executable with `--codex "/path/to
 
 Ask Codex to use **Academic Writing** and provide the text or files for the task.
 
-The eight skills cover Introduction, Related Work, System Model, Results, whole-manuscript structure, language polishing, schematic guidance, and reference checks/CSV plots.
+The plugin provides multiple skills with agents for section writing, whole-manuscript review, language polishing, schematic figure prompts, reference checks and data plotting. Section-specific guidance covers Introductions, Related Work, Models and Results.
 
-For DOI verification, ask for it explicitly. For a plot, specify the file, columns and chart type.
-
-Python is required for the startup version check and reference/plot helpers, including when you install through the App or CLI. The local scripts use the Python standard library. Your Codex account supplies the writing model; no separate model API key is needed.
-
-Manuscript writing uses your local text and remote writing guidance. Reference and plotting tasks send the explicitly selected BibTeX, LaTeX or CSV files to the remote service for processing.
+Provide the text or files you want to work on. Request DOI verification explicitly when checking references. For plotting, provide a data file (e.g., csv or json) and specify the data columns and chart type.
 
 ## Update
 
