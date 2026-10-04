@@ -4,7 +4,7 @@ A small academic writing plugin, currently optimized for Codex. Installation has
 
 ## Install
 
-Download `ieee-writing-public-0.1.8.zip` from [Releases](https://github.com/TerryZhang95/academic-writing-plugin/releases/latest), unzip it, and open a terminal in the extracted `ieee-writing` folder:
+Download `ieee-writing-public-0.1.9.zip` from [Releases](https://github.com/TerryZhang95/academic-writing-plugin/releases/latest), unzip it, and open a terminal in the extracted `ieee-writing` folder:
 
 ```sh
 python3 scripts/manage.py install
@@ -38,7 +38,6 @@ python3 scripts/manage.py check
 
 Replace `VERSION` with the displayed version. Refresh or restart Codex and open a new chat after upgrading. To postpone a reminder, run `python3 scripts/manage.py check-update --defer`.
 
-Existing installations can upgrade to 0.1.8 using their previous update tool. This version adds GitHub updates. If the old installation has no update command, download this release and use its tool to upgrade the managed installation.
 
 ## Uninstall
 
