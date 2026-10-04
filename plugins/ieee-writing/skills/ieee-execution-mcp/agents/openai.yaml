@@ -1,0 +1,4 @@
+interface:
+  display_name: "IEEE Reference & Figures (MCP)"
+  short_description: "Explicit supplied-file reference checks and fixed CSV plots"
+  default_prompt: "Use $ieee-execution-mcp for my explicitly requested reference check or CSV figure task."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "IEEE Related Work via MCP"
+  short_description: "Revise Related Work using private MCP guidance"
+  default_prompt: "Use $ieee-related-work-mcp to revise this Related Work through the IEEE Writing plugin."

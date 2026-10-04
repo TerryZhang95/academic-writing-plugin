@@ -1,0 +1,20 @@
+{
+  "name": "ieee-writing-public",
+  "interface": {
+    "displayName": "Academic Writing"
+  },
+  "plugins": [
+    {
+      "name": "ieee-writing",
+      "source": {
+        "source": "local",
+        "path": "./plugins/ieee-writing"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "IEEE Schematic Guidance (MCP)"
+  short_description: "Scoped private guidance with your own client model"
+  default_prompt: "Use $ieee-figure-prompt-mcp for my requested task."

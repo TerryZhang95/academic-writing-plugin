@@ -1,0 +1,23 @@
+{
+  "name": "ieee-writing",
+  "version": "0.1.8",
+  "description": "Academic writing, prose polishing, reference checks and figure guidance for Codex.",
+  "author": {
+    "name": "Terry Zhang"
+  },
+  "interface": {
+    "displayName": "Academic Writing",
+    "shortDescription": "Academic writing and figure tools",
+    "developerName": "Terry Zhang",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Use Academic Writing to polish this Introduction."
+    ]
+  },
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "IEEE System Model (MCP)"
+  short_description: "System Model with private guidance"
+  default_prompt: "Use $ieee-system-model-mcp to work on this System Model."

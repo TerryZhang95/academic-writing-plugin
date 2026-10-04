@@ -1,0 +1,8 @@
+{
+  "client_version": "0.1.8",
+  "api_contract": "ieee-guidance-v1",
+  "supported_api_major": 0,
+  "legacy_api_major": 1,
+  "legacy_unversioned_guidance": "unsupported; upgrade service",
+  "capability_check": "explicit available status; never infer from release minor"
+}
