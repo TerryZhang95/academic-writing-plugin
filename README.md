@@ -1,66 +1,87 @@
 # Academic Writing
 
-Academic writing, prose polishing, reference checks and figure tools for Codex CLI and Codex App. Uses the same plugin and remote MCP service on both surfaces. Local helper scripts require Python 3.9+ (Python 3.11 or newer recommended).
+Academic Writing adds manuscript guidance, language polishing, reference checks and CSV plotting to Codex App and Codex CLI. Your Codex model writes and edits the manuscript using guidance from the remote MCP service.
 
-Client version: **0.1.12**. Installation and actual writing, reference-check and plotting workflows have passed acceptance.
+## Install
 
-## Native CLI installation
+Choose one installation method. Both the App and CLI use the same plugin.
 
-With Codex CLI installed, register the public repository and add the plugin:
+### Codex App
+
+1. Open plugin management and add a custom marketplace.
+2. Enter `TerryZhang95/academic-writing-plugin` as the GitHub source.
+3. Install and enable **Academic Writing**.
+4. Open a new chat.
+
+You can also download the [release ZIP](https://github.com/TerryZhang95/academic-writing-plugin/releases/latest), extract it, and select the extracted `academic-writing` folder as the local marketplace source. If the App does not show the custom marketplace control, update the App.
+
+### Codex CLI
+
+Run these commands in your terminal:
 
 ```sh
 codex plugin marketplace add TerryZhang95/academic-writing-plugin
 codex plugin add academic-writing@academic-writing-public
 ```
 
-These commands also work in Windows PowerShell. To install from the ZIP instead, pass the extracted `academic-writing` folder to `codex plugin marketplace add`.
+The commands also work in PowerShell. Start a new Codex session after installation.
 
-Start a new Codex session after installation. Native installation does not require the Python managed installer. Python is needed for version checks and explicit reference/figure helpers.
+To install from a ZIP, replace the GitHub source in the first command with the path to the extracted `academic-writing` folder. Keep the second command unchanged.
 
-## Codex App installation
+### Python installer
 
-Open the App's plugin management page and add a custom marketplace with the GitHub source `TerryZhang95/academic-writing-plugin`. Select **Academic Writing**, install and enable it, then open a new chat. For a local ZIP installation, use the extracted `academic-writing` folder as the marketplace source. If the custom-source control is unavailable, update Codex App before continuing.
+Use this method if you want to manage installation, checks, updates and removal with the included script. It requires Codex CLI and Python 3.9 or newer; Python 3.11 or newer is recommended.
 
-The App and CLI must use the same local Codex home to share installation state. A custom `CODEX_HOME` creates a separate installation context: set it consistently for the surface you use. Do not run the managed installer over an existing native marketplace with the same name.
-
-## Optional managed installation
-
-Download `academic-writing-public-0.1.12.zip` from [Releases](https://github.com/TerryZhang95/academic-writing-plugin/releases/latest) and extract it. Run from the extracted `academic-writing` folder.
-
-macOS:
+Download [academic-writing-public-0.1.12.zip](https://github.com/TerryZhang95/academic-writing-plugin/releases/download/v0.1.12/academic-writing-public-0.1.12.zip), extract it, and open a terminal in the extracted `academic-writing` folder.
 
 ```sh
 python3 scripts/manage.py install
 python3 scripts/manage.py check
 ```
 
-Windows PowerShell:
+In PowerShell, use `py -3` in place of `python3`:
 
 ```powershell
 py -3 scripts/manage.py install
 py -3 scripts/manage.py check
 ```
 
-The managed route also requires Codex CLI. If it is not on PATH, pass `--codex "C:\path\to\codex.exe"`, or set `CODEX_CLI_PATH`. The client uses the native executable, including a uniquely discovered binary behind an npm wrapper, without executing shell wrappers. Refresh/restart the App and open a new chat afterward.
+A successful check lists the eight skill entries and confirms the MCP connection. Restart Codex and open a new chat after installation.
 
-The plugin identifier is `academic-writing`, marketplace is `academic-writing-public`, and directory is `plugins/academic-writing`. Installation is per user and requires no administrator rights. Ordinary local directories with Chinese characters or spaces are supported; symlinks and Windows junction/reparse paths are rejected. Avoid redirected/cloud-only folders for the managed installation.
+If Codex CLI is outside your `PATH`, pass its executable with `--codex "/path/to/codex"` or set `CODEX_CLI_PATH`. Quote paths that contain spaces. Install into a regular local folder.
 
 ## Use
 
-Ask Codex to use Academic Writing with the relevant text or files:
+Ask Codex to use **Academic Writing** and provide the text or files for the task.
 
-- “Polish this paragraph with Academic Writing, keeping its meaning and structure.”
-- “Use Academic Writing to revise the Introduction in paper.tex.”
-- “Check refs.bib and the citations in paper.tex, including DOI verification.”
-- “Plot these data with Academic Writing; use load for x and throughput for y.”
+| Task | Example request |
+| --- | --- |
+| Introduction | “Use Academic Writing to revise the Introduction in paper.tex.” |
+| Related Work | “Organize this Related Work around the research directions and gaps.” |
+| System Model | “Check the System Model for missing assumptions and inconsistent notation.” |
+| Results | “Revise the discussion of these results using the figures and data I provide.” |
+| Whole manuscript | “Review the structure of this manuscript and revise the Abstract.” |
+| Language polishing | “Polish this paragraph while preserving its meaning and structure.” |
+| Schematics | “Prepare a figure prompt for this system architecture.” |
+| References and plots | “Check refs.bib against paper.tex” or “Plot data.csv with load on the x-axis and throughput on the y-axis.” |
 
-Use `py -3 "path\to\script.py"` in Windows PowerShell and `python3 "path/to/script.py"` on macOS. Local scripts need no extra Python packages or model API key. Quote file paths containing spaces. Sample inputs are in `examples/`.
+For DOI verification, ask for it explicitly. For a plot, specify the file, columns and chart type. Sample writing inputs are in `examples/`.
 
-## Update and uninstall
+Python is required for the startup version check and reference/plot helpers, including when you install through the App or CLI. The local scripts use the Python standard library. Your Codex account supplies the writing model; no separate model API key is needed.
 
-**Native CLI/App installations:** use the install surface's update command/control, if available, or remove and reinstall from a refreshed marketplace source. Start a new chat afterward. Version preflight checks the plugin's own manifest and public compatibility metadata; it never creates an ownership marker or takes over native installs. Unknown/incompatible versions stop with an explicit report.
+Manuscript writing uses your local text and remote writing guidance. Reference and plotting tasks send the explicitly selected BibTeX, LaTeX or CSV files to the remote service for processing.
 
-For a CLI reinstall, remove the plugin, remove its marketplace registration, and add the repository again before reinstalling. This refreshes the source instead of reusing an old local marketplace:
+## Update
+
+Use the method you installed with, then restart Codex and open a new chat.
+
+### App
+
+Refresh the marketplace source in plugin management, then update or reinstall **Academic Writing**. For a local ZIP source, download the current release and select its extracted folder.
+
+### CLI
+
+Refresh the repository source and reinstall:
 
 ```sh
 codex plugin remove academic-writing@academic-writing-public
@@ -69,15 +90,23 @@ codex plugin marketplace add TerryZhang95/academic-writing-plugin
 codex plugin add academic-writing@academic-writing-public
 ```
 
-For App installations, refresh the marketplace through the App's source controls, then update or reinstall **Academic Writing**. If installing from a ZIP folder, download the new release first and use its newly extracted folder as the source. Pushing a repository update does not automatically upgrade an installed copy.
+### Python installer
 
-CLI removal:
+Run the installed manager from outside the installation folder. With the default Codex home, its path is `~/.codex/academic-writing-distribution/scripts/manage.py`.
 
 ```sh
-codex plugin remove academic-writing@academic-writing-public
+cd ~
+python3 ~/.codex/academic-writing-distribution/scripts/manage.py check-update
 ```
 
-**Managed installations:** run `check-update`, review its summary, then approve a particular version with `update --confirm --expected-version VERSION`. On Windows run from your user home, outside the managed installation directory, to avoid holding it open:
+Read the reported version and update summary. To install that version, replace `VERSION` below with the version shown by the check:
+
+```sh
+python3 ~/.codex/academic-writing-distribution/scripts/manage.py update --confirm --expected-version VERSION
+python3 ~/.codex/academic-writing-distribution/scripts/manage.py check
+```
+
+In PowerShell:
 
 ```powershell
 Set-Location $env:USERPROFILE
@@ -85,21 +114,41 @@ $manager = Join-Path $env:USERPROFILE '.codex\academic-writing-distribution\scri
 py -3 $manager check-update
 py -3 $manager update --confirm --expected-version VERSION
 py -3 $manager check
-# When you want to remove the managed installation:
-py -3 $manager uninstall
 ```
 
-For custom `CODEX_HOME`, use that directory consistently for installation and later actions:
+## Uninstall
+
+In the App, remove **Academic Writing** through plugin management.
+
+For a CLI installation:
+
+```sh
+codex plugin remove academic-writing@academic-writing-public
+```
+
+For a Python-managed installation:
+
+```sh
+cd ~
+python3 ~/.codex/academic-writing-distribution/scripts/manage.py uninstall
+```
+
+In PowerShell, set `$manager` as shown above and run `py -3 $manager uninstall`.
+
+## Codex home and troubleshooting
+
+The App and CLI share installation state when they use the same Codex home. If you set `CODEX_HOME`, set it before installation and before launching Codex. Restart an App that is already running. Use one installation method for this marketplace within each Codex home.
+
+For example, to use a separate home in PowerShell, run this from the extracted ZIP folder:
 
 ```powershell
 $env:CODEX_HOME = Join-Path $env:USERPROFILE 'codex-academic'
-# From the freshly extracted academic-writing folder:
 py -3 scripts/manage.py install
 Set-Location $env:USERPROFILE
 $manager = Join-Path $env:CODEX_HOME 'academic-writing-distribution\scripts\manage.py'
-py -3 $manager check-update
+py -3 $manager check
 ```
 
-Set `CODEX_HOME` before launching Codex and restart an already running App so it can use the intended context. For native CLI installation, set the same variable before running the marketplace/plugin commands above. On macOS use `python3` and the same managed script/actions. Native installations cannot be updated or uninstalled by this tool. Concurrent upgrades are refused; a failed replacement restores the previous installation. If Windows reports files in use, close affected shells/App sessions and retry. Upgrading never silently switches the rules version of an existing task.
+Use that `$manager` path for later checks, updates and removal. For a native CLI installation, set `CODEX_HOME` before running the marketplace commands instead.
 
-For managed versions through 0.1.11, download 0.1.12, uninstall with the previous installer, then install with the new installer. The renamed skill inventory requires this one-time reinstall; the previous updater remains pinned to its compatible package. Native installations use the refresh/reinstall process above. Start a new chat after upgrading. If a request returns HTTP 429, wait and explicitly retry. Restart Codex when an installed tool is missing; connection checks do not measure writing quality.
+If skills are missing, restart Codex and open a new chat. If a connection check fails, check Python, your internet connection and service availability. If the service returns HTTP 429, wait before retrying. If an update reports files in use, close terminals or App sessions using the installation folder and retry.
