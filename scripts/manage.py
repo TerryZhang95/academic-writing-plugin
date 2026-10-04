@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install/check/uninstall IEEE Writing with Codex's existing plugin mechanism."""
+"""Install/check/uninstall Academic Writing with Codex's existing plugin mechanism."""
 import argparse
 import json
 import os
@@ -10,10 +10,10 @@ from codex_app import App
 from connection import CheckError, Connection
 
 PACKAGE = Path(__file__).resolve().parents[1]
-SELECTOR = 'ieee-writing@ieee-writing-public'
-MARKET = 'ieee-writing-public'
-SKILL = 'ieee-writing:ieee-introduction-mcp'
-SKILLS = (SKILL, 'ieee-writing:ieee-related-work-mcp', 'ieee-writing:ieee-system-model-mcp', 'ieee-writing:ieee-results-mcp', 'ieee-writing:ieee-whole-paper-mcp', 'ieee-writing:ieee-execution-mcp', 'ieee-writing:ieee-language-polish-mcp', 'ieee-writing:ieee-figure-prompt-mcp')
+SELECTOR = 'academic-writing@academic-writing-public'
+MARKET = 'academic-writing-public'
+SKILL = 'academic-writing:ieee-introduction-mcp'
+SKILLS = (SKILL, 'academic-writing:ieee-related-work-mcp', 'academic-writing:ieee-system-model-mcp', 'academic-writing:ieee-results-mcp', 'academic-writing:ieee-whole-paper-mcp', 'academic-writing:ieee-execution-mcp', 'academic-writing:ieee-language-polish-mcp', 'academic-writing:ieee-figure-prompt-mcp')
 
 
 def run(codex, args, env):
@@ -30,17 +30,17 @@ def check(destination, codex, env, inventory_only=False):
     app = App(codex, env)
     try:
         app.initialize()
-        state = app.request('plugin/read', {'pluginName': 'ieee-writing', 'marketplacePath': str(destination / '.agents/plugins/marketplace.json')})['plugin']
+        state = app.request('plugin/read', {'pluginName': 'academic-writing', 'marketplacePath': str(destination / '.agents/plugins/marketplace.json')})['plugin']
         if not state['summary']['installed'] or not state['summary']['enabled']:
             raise CheckError('Plugin is not installed/enabled. Run install, then refresh Codex.')
         listing = app.request('skills/list', {'cwds': [str(destination / 'examples')], 'forceReload': True})
         skills = [s['name'] for entry in listing['data'] for s in entry['skills'] if s['name'] in SKILLS and s['enabled']]
         if sorted(skills) != sorted(SKILLS):
             raise CheckError('Thin skill was not discovered. Refresh or restart Codex.')
-        installed_version = json.loads((destination / 'plugins/ieee-writing/.codex-plugin/plugin.json').read_text())['version']
+        installed_version = json.loads((destination / 'plugins/academic-writing/.codex-plugin/plugin.json').read_text())['version']
         if state['summary'].get('localVersion') != installed_version:
             raise CheckError('Codex installed version does not match the managed package')
-        cached = Path(env['CODEX_HOME']) / 'plugins/cache/ieee-writing-public/ieee-writing' / installed_version / '.codex-plugin/plugin.json'
+        cached = Path(env['CODEX_HOME']) / 'plugins/cache/academic-writing-public/academic-writing' / installed_version / '.codex-plugin/plugin.json'
         if cached.is_symlink() or not cached.is_file() or json.loads(cached.read_text()).get('version') != installed_version:
             raise CheckError('Codex cached plugin version was not refreshed')
         report = {'installed': True, 'client_version': installed_version, 'entrypoint': SKILL, 'entrypoints': list(SKILLS), 'model_calls': 0}
@@ -49,7 +49,7 @@ def check(destination, codex, env, inventory_only=False):
             servers = [s for s in status['data'] if s.get('pluginId') == SELECTOR]
             if len(servers) != 1 or set(servers[0]['tools']) != {'get_writing_guidance'}:
                 raise CheckError('Codex did not connect to the plugin MCP. Check public access and refresh Codex.')
-            config = json.loads((destination / 'plugins/ieee-writing/.mcp.json').read_text())
+            config = json.loads((destination / 'plugins/academic-writing/.mcp.json').read_text())
             report.update(Connection(config['mcpServers']['ieee_guidance']['url']).check())
         else:
             report['connection'] = 'not tested (inventory-only developer check)'
@@ -64,10 +64,13 @@ def manage(action, *, package=PACKAGE, codex='codex', home=None, inventory_only=
     env = dict(os.environ, CODEX_HOME=str(home))
     for key in ('OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'CODEX_API_KEY', 'IEEE_MCP_ACCESS_TOKEN'):
         env.pop(key, None)
-    marker = home / 'ieee-writing-install.json'
-    destination = home / 'ieee-writing-distribution'
+    marker = home / 'academic-writing-install.json'
+    destination = home / 'academic-writing-distribution'
     if destination.is_symlink() or marker.is_symlink():
         raise CheckError('Managed installation paths must not be symbolic links')
+    legacy_marker = home / 'ieee-writing-install.json'
+    if legacy_marker.exists() or legacy_marker.is_symlink():
+        raise CheckError('Previous ieee-writing installation detected. Uninstall with the old installer, then install this Academic Writing bundle.')
     if action == 'install':
         known = run(codex, ['plugin', 'marketplace', 'list'], env)['marketplaces']
         for item in known:

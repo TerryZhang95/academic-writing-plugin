@@ -14,7 +14,7 @@ from urllib.request import Request, build_opener, HTTPRedirectHandler
 import zipfile
 from connection import CheckError
 
-ALLOWED = frozenset(['.agents/plugins/marketplace.json', 'README.md', 'compatibility.json', 'examples/context.md', 'examples/introduction.tex', 'examples/related-work-context.md', 'examples/related-work.tex', 'plugins/ieee-writing/.codex-plugin/plugin.json', 'plugins/ieee-writing/.mcp.json', 'plugins/ieee-writing/README.md', 'plugins/ieee-writing/scripts/bridge.py', 'plugins/ieee-writing/skills/ieee-execution-mcp/SKILL.md', 'plugins/ieee-writing/skills/ieee-execution-mcp/agents/openai.yaml', 'plugins/ieee-writing/skills/ieee-figure-prompt-mcp/SKILL.md', 'plugins/ieee-writing/skills/ieee-figure-prompt-mcp/agents/openai.yaml', 'plugins/ieee-writing/skills/ieee-introduction-mcp/SKILL.md', 'plugins/ieee-writing/skills/ieee-introduction-mcp/agents/openai.yaml', 'plugins/ieee-writing/skills/ieee-language-polish-mcp/SKILL.md', 'plugins/ieee-writing/skills/ieee-language-polish-mcp/agents/openai.yaml', 'plugins/ieee-writing/skills/ieee-related-work-mcp/SKILL.md', 'plugins/ieee-writing/skills/ieee-related-work-mcp/agents/openai.yaml', 'plugins/ieee-writing/skills/ieee-results-mcp/SKILL.md', 'plugins/ieee-writing/skills/ieee-results-mcp/agents/openai.yaml', 'plugins/ieee-writing/skills/ieee-system-model-mcp/SKILL.md', 'plugins/ieee-writing/skills/ieee-system-model-mcp/agents/openai.yaml', 'plugins/ieee-writing/skills/ieee-whole-paper-mcp/SKILL.md', 'plugins/ieee-writing/skills/ieee-whole-paper-mcp/agents/openai.yaml', 'scripts/codex_app.py', 'scripts/connection.py', 'scripts/manage.py', 'scripts/run_writing_acceptance.py', 'scripts/updates.py', 'plugins/ieee-writing/scripts/preflight.py'])
+ALLOWED = frozenset(['.agents/plugins/marketplace.json', 'README.md', 'compatibility.json', 'examples/context.md', 'examples/introduction.tex', 'examples/related-work-context.md', 'examples/related-work.tex', 'plugins/academic-writing/.codex-plugin/plugin.json', 'plugins/academic-writing/.mcp.json', 'plugins/academic-writing/README.md', 'plugins/academic-writing/scripts/bridge.py', 'plugins/academic-writing/skills/ieee-execution-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-execution-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/ieee-figure-prompt-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-figure-prompt-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/ieee-introduction-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-introduction-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/ieee-language-polish-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-language-polish-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/ieee-related-work-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-related-work-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/ieee-results-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-results-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/ieee-system-model-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-system-model-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/ieee-whole-paper-mcp/SKILL.md', 'plugins/academic-writing/skills/ieee-whole-paper-mcp/agents/openai.yaml', 'scripts/codex_app.py', 'scripts/connection.py', 'scripts/manage.py', 'scripts/run_writing_acceptance.py', 'scripts/updates.py', 'plugins/academic-writing/scripts/preflight.py'])
 MAX_PACKAGE = 1048576
 MAX_EXPANDED = 2097152
 GITHUB = 'https://github.com/TerryZhang95/academic-writing-plugin'
@@ -33,16 +33,16 @@ def safe(path):
 
 def owned(home):
     safe(home)
-    dest=safe(home/'ieee-writing-distribution')
-    marker=safe(home/'ieee-writing-install.json')
-    if not marker.is_file() or json.loads(marker.read_text()) != {'selector':'ieee-writing@ieee-writing-public','destination':str(dest)}:
+    dest=safe(home/'academic-writing-distribution')
+    marker=safe(home/'academic-writing-install.json')
+    if not marker.is_file() or json.loads(marker.read_text()) != {'selector':'academic-writing@academic-writing-public','destination':str(dest)}:
         raise CheckError('Install with the public managed installer before checking updates')
-    state=safe(home/'ieee-writing-updates')
+    state=safe(home/'academic-writing-updates')
     state.mkdir(mode=0o700, exist_ok=True)
     return dest,state
 
 def origin(dest):
-    url=json.loads((dest/'plugins/ieee-writing/.mcp.json').read_text())['mcpServers']['ieee_guidance']['url']
+    url=json.loads((dest/'plugins/academic-writing/.mcp.json').read_text())['mcpServers']['ieee_guidance']['url']
     parts=urlsplit(url)
     if parts.scheme!='https' or not parts.hostname or parts.username or parts.password or parts.path!='/mcp' or parts.query or parts.fragment:
         raise CheckError('Updates require the trusted HTTPS MCP installation')
@@ -91,7 +91,7 @@ def validate_metadata(data, base):
     latest=data.get('latest_version'); minimum=data.get('minimum_compatible_version')
     if version(latest) is None or version(minimum) is None or version(minimum)>version(latest):
         raise CheckError('Invalid client version policy')
-    expected=(GITHUB+'/releases/download/v'+latest+'/ieee-writing-public-'+latest+'.zip' if base==GITHUB else base+'/client/ieee-writing-public-'+latest+'.zip')
+    expected=(GITHUB+'/releases/download/v'+latest+'/academic-writing-public-'+latest+'.zip' if base==GITHUB else base+'/client/academic-writing-public-'+latest+'.zip')
     if data.get('package_url')!=expected or not re.fullmatch('[0-9a-f]{64}',str(data.get('sha256',''))):
         raise CheckError('Package must use the fixed trusted service path')
     if not isinstance(data.get('summary'),str) or len(data['summary'])>2000:
@@ -99,7 +99,7 @@ def validate_metadata(data, base):
     return data
 
 def current(dest):
-    return json.loads((dest/'plugins/ieee-writing/.codex-plugin/plugin.json').read_text())['version']
+    return json.loads((dest/'plugins/academic-writing/.codex-plugin/plugin.json').read_text())['version']
 
 def check_update(home, *, loaded_version=None, defer=False, force=False):
     dest,state=owned(home); origin(dest); base=GITHUB; cache=safe(state/'check.json')
@@ -145,9 +145,9 @@ def extract(data, stage, expected, base):
         found=set()
         for item in members:
             name=item.filename
-            if not name.startswith('ieee-writing/'):
+            if not name.startswith('academic-writing/'):
                 raise CheckError('Unexpected archive root')
-            relative=name[len('ieee-writing/'):]
+            relative=name[len('academic-writing/'):]
             mode=item.external_attr>>16
             if relative not in ALLOWED or relative in found or item.is_dir() or item.flag_bits&1 or stat.S_IFMT(mode) not in (0,stat.S_IFREG) or item.file_size>150000:
                 raise CheckError('Forbidden package member')
@@ -159,7 +159,7 @@ def extract(data, stage, expected, base):
         if origin(stage)!=base:
             raise CheckError('Package changes the trusted MCP service')
         catalog=json.loads((stage/'.agents/plugins/marketplace.json').read_text())
-        if catalog.get('name')!='ieee-writing-public' or len(catalog.get('plugins',[]))!=1 or catalog['plugins'][0].get('source')!={'source':'local','path':'./plugins/ieee-writing'}:
+        if catalog.get('name')!='academic-writing-public' or len(catalog.get('plugins',[]))!=1 or catalog['plugins'][0].get('name')!='academic-writing' or json.loads((stage/'plugins/academic-writing/.codex-plugin/plugin.json').read_text()).get('name')!='academic-writing' or catalog['plugins'][0].get('source')!={'source':'local','path':'./plugins/academic-writing'}:
             raise CheckError('Package changes marketplace ownership')
 
 def _update(home, *, confirm, expected_version, install_check):

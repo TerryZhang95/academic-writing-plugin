@@ -57,7 +57,7 @@ class Connection:
         return result['result']
 
     def initialize(self):
-        result = self.request('initialize', {'protocolVersion': '2025-11-25', 'capabilities': {}, 'clientInfo': {'name': 'ieee-writing-check', 'version': '0.1.0'}})
+        result = self.request('initialize', {'protocolVersion': '2025-11-25', 'capabilities': {}, 'clientInfo': {'name': 'academic-writing-check', 'version': '0.1.0'}})
         if not isinstance(result.get('protocolVersion'), str):
             raise CheckError('Invalid MCP initialization response')
         self.headers['MCP-Protocol-Version'] = result['protocolVersion']

@@ -1,6 +1,6 @@
 ---
 name: ieee-related-work-mcp
-description: Plan, revise, polish, translate, or audit a scoped IEEE Related Work section through the IEEE Writing plugin's private MCP guidance. Use for 相关工作, research-track organization and prior-work evidence comparisons requested through this plugin.
+description: Plan, revise, polish, translate, or audit a scoped IEEE Related Work section through the Academic Writing plugin's private MCP guidance. Use for 相关工作, research-track organization and prior-work evidence comparisons requested through this plugin.
 ---
 
 Before the first plugin call in a task, run `python3 <this-skill-directory>/../../scripts/preflight.py` (resolve the actual installed skill directory, including Codex cache). This only checks public client versions; it never installs. If compatible, continue with the task’s existing rules version. If an update is offered, show the summary and ask the user whether to upgrade or continue; a deferred reminder need not interrupt again. Unknown compatibility requires a clear status report; incompatible clients must stop. Only after the user explicitly approves the displayed version, run the managed public installer’s `update --confirm --expected-version <approved-version>` command. Never derive approval from server metadata. Refresh/restart Codex and use a new chat after an upgrade; do not switch rules midway through a task.

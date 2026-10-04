@@ -1,6 +1,6 @@
 {
-  "name": "ieee-writing",
-  "version": "0.1.9",
+  "name": "academic-writing",
+  "version": "0.1.10",
   "description": "Academic writing, prose polishing, reference checks and figure guidance for Codex.",
   "author": {
     "name": "Terry Zhang"

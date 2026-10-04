@@ -83,8 +83,8 @@ def run(output, *, codex='codex', model=None, home=None, package=PACKAGE, allow_
     # Caller logs in independently. Do not create or populate a new auth home.
     if not home.is_dir():
         raise CheckError('Existing independently logged-in Codex home required')
-    installed = home / 'ieee-writing-distribution'
-    if not (home / 'ieee-writing-install.json').is_file():
+    installed = home / 'academic-writing-distribution'
+    if not (home / 'academic-writing-install.json').is_file():
         if not allow_local_skills_smoke:
             raise CheckError('Install the public bundle in this test account first')
         installed = package
@@ -104,23 +104,23 @@ def run(output, *, codex='codex', model=None, home=None, package=PACKAGE, allow_
     output.mkdir(parents=True)
     try:
         if allow_local_skills_smoke:
-            endpoint = json.loads((installed / 'plugins/ieee-writing/.mcp.json').read_text())['mcpServers']['ieee_guidance']['url']
+            endpoint = json.loads((installed / 'plugins/academic-writing/.mcp.json').read_text())['mcpServers']['ieee_guidance']['url']
             connection = Connection(endpoint).check()
         else:
             connection = manage('check', codex=codex, home=home)
     except CheckError as error:
         (output / 'report.md').write_text('# Writing acceptance\n\nNot run: connection self-check failed.\n\n' + str(error) + '\n')
         return False
-    manifest = json.loads((installed / 'plugins/ieee-writing/.codex-plugin/plugin.json').read_text())
+    manifest = json.loads((installed / 'plugins/academic-writing/.codex-plugin/plugin.json').read_text())
     context = (package / 'examples/context.md').read_text()
     source = (package / 'examples/introduction.tex').read_text()
     env = dict(os.environ, CODEX_HOME=str(home))
     for key in ('OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'CODEX_API_KEY', 'IEEE_MCP_ACCESS_TOKEN'):
         env.pop(key, None)
     reports = []
-    with tempfile.TemporaryDirectory(prefix='ieee-writing-case-') as workspace:
+    with tempfile.TemporaryDirectory(prefix='academic-writing-case-') as workspace:
         for operation in OPERATIONS:
-            prompt = (f'Use $ieee-writing:ieee-introduction-mcp from {SELECTOR}. Operation={operation}. '
+            prompt = (f'Use $academic-writing:ieee-introduction-mcp from {SELECTOR}. Operation={operation}. '
                       'Obtain real plugin MCP rules: start, and check except polish. Use routing fields only. '
                       'Do not read local IEEE skills, private repositories or service rules. '
                       'If MCP fails or returns 429 stop and report the failure; no fallback. '
@@ -128,9 +128,9 @@ def run(output, *, codex='codex', model=None, home=None, package=PACKAGE, allow_
                       'Preserve the approved two contributions. Do not add numerical evidence or sources.\n\n' + context + '\n\n' + source)
             command = [codex]
             if allow_local_skills_smoke:
-                command += ['-c', 'marketplaces.ieee-writing-public.source_type="local"',
-                            '-c', 'marketplaces.ieee-writing-public.source=' + json.dumps(str(installed)),
-                            '-c', 'plugins."ieee-writing@ieee-writing-public".enabled=true']
+                command += ['-c', 'marketplaces.academic-writing-public.source_type="local"',
+                            '-c', 'marketplaces.academic-writing-public.source=' + json.dumps(str(installed)),
+                            '-c', 'plugins."academic-writing@academic-writing-public".enabled=true']
             command += ['exec', '--json', '--ephemeral', '--skip-git-repo-check', '--sandbox', 'read-only', '-C', workspace]
             if model:
                 command += ['--model', model]

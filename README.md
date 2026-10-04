@@ -4,14 +4,14 @@ A small academic writing plugin, currently optimized for Codex. Installation has
 
 ## Install
 
-Download `ieee-writing-public-0.1.9.zip` from [Releases](https://github.com/TerryZhang95/academic-writing-plugin/releases/latest), unzip it, and open a terminal in the extracted `ieee-writing` folder:
+Download `academic-writing-public-0.1.10.zip` from [Releases](https://github.com/TerryZhang95/academic-writing-plugin/releases/latest), unzip it, and open a terminal in the extracted `academic-writing` folder:
 
 ```sh
 python3 scripts/manage.py install
 python3 scripts/manage.py check
 ```
 
-Refresh or restart Codex, then open a new chat. The plugin appears as **Academic Writing**; its internal identifier remains `ieee-writing`.
+Refresh or restart Codex, then open a new chat. The plugin appears as **Academic Writing**; its plugin identifier is `academic-writing`. The marketplace is `academic-writing-public` and the plugin directory is `plugins/academic-writing`.
 
 ## Use
 
@@ -27,7 +27,9 @@ Sample writing inputs are in `examples/`. For file tasks, specify the files and 
 
 ## Update
 
-Run these commands from the downloaded folder, or from `~/.codex/ieee-writing-distribution` after installation:
+For a previous installation named `ieee-writing`, run `python3 scripts/manage.py uninstall` from the old installed folder first. Then download the new bundle and run its install commands above. This one-time reinstall switches the plugin identifier to `academic-writing`; refresh/restart Codex afterward.
+
+Run these commands from the downloaded folder, or from `~/.codex/academic-writing-distribution` after installation:
 
 ```sh
 python3 scripts/manage.py check-update
