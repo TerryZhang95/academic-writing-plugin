@@ -1,9 +1,9 @@
-# Plugin pull request language
+# Repository language
 
-- Use English for every plugin-related pull request unless the user explicitly requests another language. This applies to the public plugin repository and plugin-related changes in the private library.
-- Write PR titles, descriptions, comments, review replies, and acceptance reports attached to the PR in English. Use English for new commit messages for plugin changes as well.
-- This specific rule takes precedence over a general preference for Chinese PR text in the private library or a writing skill. Preserve facts, links, validation limits, and deployment status when translating existing PR text.
-- Keep user-facing descriptions direct, concrete, concise, and readable. Explain the actual behavior change first.
+- All content in this open-source `academic-writing-plugin` repository must be in English unless the user explicitly requests another language. This includes PR titles and descriptions, comments, review replies, commit messages, README files, release notes, skill instructions and trigger descriptions, UI metadata, code comments, user-facing messages, and reports.
+- The private `ieee_writing` library uses Chinese for its PRs, repository documentation, and acceptance reports, including plugin integration work. Public client files generated or synchronized from that library must use English.
+- These rules replace the previous rule that required English for plugin-related PRs in both repositories. Preserve facts, links, validation limits, and deployment status when changing language.
+- Keep descriptions direct, concrete, concise, and readable. Explain the actual behavior change first.
 
 # Public distribution
 

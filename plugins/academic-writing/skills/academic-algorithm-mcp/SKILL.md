@@ -1,6 +1,6 @@
 ---
 name: academic-algorithm-mcp
-description: Write, revise, polish or audit an Academic Method/Algorithm section through MCP. Use when requests concern 算法部分、方法部分 or pseudocode; experimental evaluation belongs to Results.
+description: Write, revise, polish or audit an Academic Method/Algorithm section through MCP. Use when requests concern algorithm sections, method sections or pseudocode; experimental evaluation belongs to Results.
 ---
 
 
