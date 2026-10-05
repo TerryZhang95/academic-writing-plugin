@@ -138,7 +138,7 @@ class Connection:
                 raise CheckError('Results did not retain the requested task release/API identity')
             results_digest = response['rules_version']
         added_digests = {}
-        for workflow, scope in [('whole_paper', {'operation':'polish', 'section':'abstract'}), ('shared', {'operation':'guide', 'module':'notation'}), ('language_polish', {'operation':'polish','language':'en','register':'academic'}), ('figure_prompt', {'operation':'prompt'})]:
+        for workflow, scope in [('algorithm', {'operation':'polish'}), ('whole_paper', {'operation':'polish', 'section':'abstract'}), ('shared', {'operation':'guide', 'module':'notation'}), ('language_polish', {'operation':'polish','language':'en','register':'academic'}), ('figure_prompt', {'operation':'prompt'})]:
             available = any(item == {'id':workflow, 'status':'available'} for item in capabilities)
             if not available:
                 continue
@@ -157,7 +157,7 @@ class Connection:
         return {'https': True, 'mcp_tool': 'get_writing_guidance', 'rules_version': structured['rules_version'],
                 'api_version': api, 'api_contract': contract or 'legacy-major-1', 'mcp_version': structured.get('mcp_version'),
                 'language_polish_available':'language_polish' in added_digests, 'figure_prompt_available':'figure_prompt' in added_digests,
-                'whole_paper_available':'whole_paper' in added_digests, 'shared_available':'shared' in added_digests,
+                'algorithm_available':'algorithm' in added_digests, 'whole_paper_available':'whole_paper' in added_digests, 'shared_available':'shared' in added_digests,
                 'added_rules_versions':added_digests, 'results_available': results, 'results_rules_version': results_digest,
                 'system_model_available': system, 'system_model_rules_version': system_digest,
                 'related_work_available': related, 'related_work_rules_version': related_digest,

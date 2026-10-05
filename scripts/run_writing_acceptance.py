@@ -79,7 +79,11 @@ def diagnostic(events, stderr, returncode, evidence):
     return 'Required runtime MCP calls observed; human content review remains.'
 
 
-def run(output, *, codex='codex', model=None, home=None, package=PACKAGE, allow_local_skills_smoke=False):
+def run(output, *, codex='codex', model=None, home=None, package=PACKAGE, allow_local_skills_smoke=False, context_path=None, source_path=None):
+    if context_path is None or source_path is None:
+        raise CheckError('Supply --context and --source files for writing acceptance; the bundle contains no example inputs')
+    context = Path(context_path).read_text(encoding='utf-8')
+    source = Path(source_path).read_text(encoding='utf-8')
     home = Path(home or os.environ.get('CODEX_HOME', Path.home() / '.codex')).expanduser().resolve()
     # Caller logs in independently. Do not create or populate a new auth home.
     if not home.is_dir():
@@ -94,7 +98,7 @@ def run(output, *, codex='codex', model=None, home=None, package=PACKAGE, allow_
         if directory.is_dir():
             unwanted = [path for path in directory.rglob('SKILL.md')
                         if (path.parents[1].name == 'skills' or '-writing' in path.parent.name or 'paper-self-review' in path.as_posix().lower())
-                        and path.parent.name not in {'academic-introduction-mcp', 'academic-related-work-mcp', 'academic-system-model-mcp', 'academic-results-mcp', 'academic-whole-paper-mcp', 'academic-execution-mcp', 'academic-language-polish-mcp', 'academic-figure-prompt-mcp'}]
+                        and path.parent.name not in {'academic-introduction-mcp', 'academic-related-work-mcp', 'academic-system-model-mcp', 'academic-algorithm-mcp', 'academic-results-mcp', 'academic-whole-paper-mcp', 'academic-execution-mcp', 'academic-language-polish-mcp', 'academic-figure-prompt-mcp'}]
             if unwanted:
                 local_skills_detected = True
                 if not allow_local_skills_smoke:
@@ -113,8 +117,6 @@ def run(output, *, codex='codex', model=None, home=None, package=PACKAGE, allow_
         (output / 'report.md').write_text('# Writing acceptance\n\nNot run: connection self-check failed.\n\n' + str(error) + '\n')
         return False
     manifest = json.loads((installed / 'plugins/academic-writing/.codex-plugin/plugin.json').read_text(encoding='utf-8'))
-    context = (package / 'examples/context.md').read_text(encoding='utf-8')
-    source = (package / 'examples/introduction.tex').read_text(encoding='utf-8')
     env = dict(os.environ, CODEX_HOME=str(home))
     for key in (set(os.environ) & {'OPENAI_API_KEY', 'ANTHROPIC_API_KEY', 'CODEX_API_KEY'}) | {key for key in os.environ if key.endswith('_MCP_ACCESS_TOKEN')}:
         env.pop(key, None)
@@ -176,13 +178,15 @@ def run(output, *, codex='codex', model=None, home=None, package=PACKAGE, allow_
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--context', type=Path, required=True)
+    parser.add_argument('--source', type=Path, required=True)
     parser.add_argument('--model')
     parser.add_argument('--codex', default='codex')
     parser.add_argument('--home', type=Path)
     parser.add_argument('--allow-local-skills-smoke', action='store_true', help='Developer-only: use existing login and process-local plugin overrides; report non-isolated smoke, not new-user acceptance')
     args = parser.parse_args()
     try:
-        passed = run(args.output, codex=args.codex, model=args.model, home=args.home, allow_local_skills_smoke=args.allow_local_skills_smoke)
+        passed = run(args.output, codex=args.codex, model=args.model, home=args.home, allow_local_skills_smoke=args.allow_local_skills_smoke, context_path=args.context, source_path=args.source)
     except (CheckError, OSError, ValueError) as error:
         parser.exit(1, str(error) if isinstance(error, CheckError) else 'Writing test failed; inspect prerequisites.\n')
     print('Report created. Automatic checks passed; human review remains.' if passed else 'Report created with failed/pending checks; no writing acceptance claimed.')
