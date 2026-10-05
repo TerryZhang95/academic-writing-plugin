@@ -50,6 +50,8 @@ If Codex CLI is outside your `PATH`, pass its executable with `--codex "/path/to
 
 ## Use
 
+Each guidance request uses the service’s current rules, including requests from work already in progress. Updates preserve the supported interfaces and existing functions. Returned version metadata records the rules used; historical versions are reserved for release records and operator rollback.
+
 Ask Codex to use **Academic Writing** and provide the text or files for the task.
 
 The plugin provides multiple skills with agents for section writing, whole-manuscript review, language polishing, schematic figure prompts, reference checks and data plotting. Section-specific guidance covers Introductions, Related Work, Models, Methods/Algorithms and Results.

@@ -99,8 +99,7 @@ def request(url, payload=None, credential=None, binary=False):
 
 def execute(base, selected, options, pin, task, deadline=None):
     submitted = request(base, {'task':task,'files':selected,'options':options,'library_release':pin})
-    if submitted['library_release'] != pin:
-        raise BridgeError('Submitted library changed; task stopped')
+    pin = submitted['library_release']  # Actual version used by this submitted job.
     identity, credential = submitted['task_id'], submitted['task_secret']
     if not re.fullmatch(r'[a-f0-9]{32}', identity) or not re.fullmatch(r'[A-Za-z0-9_-]{40,64}', credential):
         raise BridgeError('Invalid task capability')
@@ -114,13 +113,17 @@ def execute(base, selected, options, pin, task, deadline=None):
     else: raise BridgeError('Task deadline exceeded; temporary server data will expire')
     if status['status'] != 'complete' or set(status['outputs']) != OUTPUTS[task]:
         raise BridgeError('Task failed: unsupported input, dependency or resource limit; no completion claimed')
-    return {name:request(base + '/' + identity + '/outputs/' + name, credential=credential, binary=True)
-            for name in status['outputs']}
+    outputs = {name:request(base + '/' + identity + '/outputs/' + name, credential=credential, binary=True)
+               for name in status['outputs']}
+    if task == 'plot':
+        metadata=json.loads(outputs['figure.json']);metadata['library_release']=pin
+        outputs['figure.json']=json.dumps(metadata).encode()
+    return outputs
 
 
 def reference_batches(base, selected, pin, external):
     digest=hashlib.sha256(json.dumps(selected,sort_keys=True,ensure_ascii=False,separators=(',',':')).encode()).hexdigest()
-    merged=None; offset=0; batches=0; stopped=None
+    merged=None; offset=0; batches=0; stopped=None; releases=[]
     deadline=time.monotonic()+500
     while True:
         try:
@@ -131,7 +134,7 @@ def reference_batches(base, selected, pin, external):
             if type(total) is not int or not 1<=total<=100 or type(rows) is not list or any(type(row) is not dict or type(row.get('index')) is not int for row in rows):
                 raise BridgeError('Invalid reference batch count/rows')
             expected=list(range(total)) if offset==0 else list(range(offset,min(offset+20,total)))
-            if (value['input_digest']!=digest or value['library_release']!=pin or value['batch_start']!=offset
+            if (value['input_digest']!=digest or value['batch_start']!=offset
                 or type(total) is not int or not 1<=total<=100 or [r['index'] for r in rows]!=expected
                 or (merged is not None and total!=merged['total_entries'])):
                 raise BridgeError('Reference batch identity/count/offset changed; results not accepted')
@@ -143,6 +146,8 @@ def reference_batches(base, selected, pin, external):
                     if row['key']!=merged['entries'][row['index']]['key']:
                         raise BridgeError('Reference identity changed; batch not accepted')
                 for row in rows:merged['entries'][row['index']]['external']=row['external']
+            releases.append(value['library_release'])
+            merged['library_release']=value['library_release']
             batches+=1
             if any(r['external']['status']=='rate_limited' for r in rows):
                 stopped='Crossref rate limited: later batches paused; explicitly retry later';break
@@ -152,6 +157,7 @@ def reference_batches(base, selected, pin, external):
         except (BridgeError,OSError,ValueError,KeyError,TypeError):
             if merged is None:raise BridgeError('Whole-input reference check did not finish; no verified entry report is available') from None
             stopped='Reference batch failed or service busy; unaccepted/later entries remain pending';break
+    merged['batch_library_releases']=releases
     merged['batch_count']=batches;merged['status']='partial' if stopped else 'complete';merged['batch_stop_reason']=stopped
     if stopped:
         for row in merged['entries']:
@@ -188,11 +194,10 @@ def run(args):
     info = request(base)
     if info.get('task_contract') != 'academic-execution-v1':
         raise BridgeError('Execution service is unavailable; upgrade the installed plugin')
-    pin = args.library_release or info['library_release']
+    pin = info['library_release']  # Legacy --library-release is accepted but does not select rules.
     if args.task=='references':
-        pinned_info=request(base+'?'+urlencode({'library_release':pin}))
-        if pinned_info.get('library_release')!=pin or pinned_info.get('reference_batching') is not True:
-            raise BridgeError('Reference batching unavailable in this fixed library; select a supported library explicitly, never silently switch')
+        if info.get('reference_batching') is not True:
+            raise BridgeError('Reference batching unavailable in the current service')
         downloaded=reference_batches(base,selected,pin,args.external)
     else:
         options={'kind':args.kind,'xlabel':args.xlabel,'ylabel':args.ylabel,'title':args.title,'columns':args.columns}
@@ -204,7 +209,7 @@ def run(args):
     for name, data in downloaded.items():
         with (output / name).open('xb') as target:
             target.write(data)
-    print(json.dumps({'status':json.loads(downloaded['references.json'])['status'] if args.task=='references' else 'complete','task':args.task,'library_release':pin,
+    print(json.dumps({'status':json.loads(downloaded['references.json'])['status'] if args.task=='references' else 'complete','task':args.task,'library_release':json.loads(downloaded['references.json' if args.task=='references' else 'figure.json']).get('library_release',pin),
                       'output_directory':str(output),'files':sorted(downloaded)}, ensure_ascii=False))
 
 
