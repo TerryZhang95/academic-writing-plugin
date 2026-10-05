@@ -1,8 +1,25 @@
-# Academic Writing
+# Academic Writing Plugin for Codex
 
-Academic Writing helps you plan, draft, revise and review research manuscripts in Codex App and Codex CLI. It provides section-specific guidance for Introductions, Related Work, System Models and Results, alongside whole-manuscript review, language polishing, reference checks, data plotting and schematic figure prompts.
+Academic Writing is an open-source academic writing plugin for Codex App and Codex CLI. It helps you plan, draft, revise and review research papers, with dedicated workflows for manuscript sections, language polishing, reference checks and scientific figures.
 
-## Install
+Codex has strong writing and revision capabilities and can work directly with manuscript files. This plugin builds on those capabilities with academic writing guidance that connects the research motivation, claims, methods and results. The goal is to make Codex a more useful writing partner throughout manuscript preparation, from an initial outline to a full-paper review.
+
+The plugin brings writing skills and a connected guidance service together in one installation. You can move between section writing, manuscript review, references and figures in the same Codex chat, without configuring each skill and tool separately. Codex uses your existing account and selected model to carry out the work.
+
+## Functions
+
+| Function | What it helps you do |
+| --- | --- |
+| Section writing | Plan, draft and revise Introductions, Related Work, System Models and Results with guidance tailored to each section. |
+| Whole-paper writing and review | Coordinate sections, revise the manuscript's argument and check consistency across claims, notation and terminology. Support also covers Abstracts, Conclusions, Problem Formulations, Analysis and Appendices. |
+| Language polishing | Polish English and Chinese prose for clear, natural academic or professional expression while preserving meaning and technical content. |
+| Reference checks | Check supplied BibTeX entries and LaTeX citation keys for missing keys, duplicates and metadata issues. Verify DOI metadata when requested. |
+| Data plotting and Results figures | Plot supplied quantitative data, review figures and write Results text and captions based on the provided evidence. |
+| Schematic figures | Plan architecture, workflow, protocol and system diagrams, prepare image-generation prompts and review supplied diagrams. |
+
+The plugin is under active development. Suggestions for additional writing workflows, checks or figure tools are welcome through [GitHub Issues](https://github.com/TerryZhang95/academic-writing-plugin/issues). Describe the task you want to complete and the output you need.
+
+## Installation
 
 ### Codex App
 
@@ -24,13 +41,13 @@ codex plugin add academic-writing@academic-writing-public
 
 The commands also work in PowerShell. Start a new Codex session after installation.
 
-To install from a ZIP, replace the GitHub source in the first command with the path to the extracted `academic-writing` folder. 
+To install from a ZIP, replace the GitHub source in the first command with the path to the extracted `academic-writing` folder.
 
 ### Python installer
 
 Use this method if you want to manage installation, checks, updates and removal with the included script. It requires Codex CLI. Python 3.11 or newer is recommended.
 
-Download [academic-writing-public-0.1.12.zip](https://github.com/TerryZhang95/academic-writing-plugin/releases/download/v0.1.12/academic-writing-public-0.1.12.zip), extract it, and open a terminal in the extracted `academic-writing` folder.
+Download the ZIP asset from the [latest release](https://github.com/TerryZhang95/academic-writing-plugin/releases/latest), extract it, and open a terminal in the extracted `academic-writing` folder.
 
 ```sh
 python3 scripts/manage.py install
@@ -48,13 +65,15 @@ A successful check lists the eight skill entries and confirms the MCP connection
 
 If Codex CLI is outside your `PATH`, pass its executable with `--codex "/path/to/codex"` or set `CODEX_CLI_PATH`. Quote paths that contain spaces. Install into a regular local folder.
 
-## Use
+## How to use
 
-Ask Codex to use **Academic Writing** and provide the text or files for the task.
+Ask Codex to use **Academic Writing** and provide the text or files you want to work on. State the task, the section or files in scope, and any requirements such as the target venue, language or output format. Codex selects the relevant writing workflow from your request.
 
-The plugin provides multiple skills with agents for section writing, whole-manuscript review, language polishing, schematic figure prompts, reference checks and data plotting. Section-specific guidance covers Introductions, Related Work, Models and Results.
+For drafting, provide your research notes, methods and available results. For revision or review, provide the current manuscript and identify the parts you want changed or checked. If you want wording changes only, specify that the structure and technical meaning should be preserved.
 
-Provide the text or files you want to work on. Request DOI verification explicitly when checking references. For plotting, provide a data file (e.g., csv or json) and specify the data columns and chart type.
+For reference checks, provide the relevant `.bib` and `.tex` files and request DOI verification explicitly if needed. For plotting, provide the data file, selected columns, units and intended comparison. For schematic figures, describe the components and their relationships, and specify whether you need a plan, a generation prompt or a rendered image.
+
+Writing guidance is retrieved without uploading manuscript text. When you request the cloud reference checker or CSV plotting tool, the selected files are uploaded for that task.
 
 ## Update
 
