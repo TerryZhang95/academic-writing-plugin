@@ -98,66 +98,69 @@ class Connection:
         capabilities = structured.get('capabilities', [])
         if not isinstance(capabilities, list) or any(not isinstance(item, dict) or set(item) != {'id', 'status'} or type(item['id']) is not str or item['status'] not in ('available', 'planned') for item in capabilities):
             raise CheckError('Invalid service capability metadata')
+        def compatible_metadata(response):
+            current_api = response.get('api_version')
+            if not isinstance(current_api, str) or len(current_api) > 32 or not re.fullmatch(r'(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)', current_api):
+                return False
+            if int(current_api.split('.')[0]) != major or response.get('api_contract') != contract:
+                return False
+            for field in ('mcp_version', 'library_release'):
+                value = response.get(field)
+                if value is not None and (not isinstance(value, str) or len(value) > 32 or not re.fullmatch(r'(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)', value)):
+                    return False
+            return True
         related = any(item == {'id': 'related_work', 'status': 'available'} for item in capabilities)
         related_digest = None
         if related:
             arguments = {'workflow': 'related_work', 'operation': 'polish', 'stage': 'start'}
-            if structured.get('library_release') is not None:
-                arguments['library_release'] = structured['library_release']
             related_result = self.request('tools/call', {'name': 'get_writing_guidance', 'arguments': arguments})
             response = related_result.get('structuredContent')
             if related_result.get('isError') or not isinstance(response, dict) or response.get('workflow') != 'related_work' or type(response.get('guidance')) is not str or not response['guidance'] or type(response.get('rules_version')) is not str or not re.fullmatch(r'[0-9a-f]{64}', response['rules_version']):
                 raise CheckError('Related Work retrieval failed; service upgrade or operator review is required')
-            if response.get('library_release') != structured.get('library_release') or response.get('api_version') != api or response.get('api_contract') != contract:
-                raise CheckError('Related Work did not retain the requested task release')
+            if not compatible_metadata(response):
+                raise CheckError('Related Work changed the API contract')
             related_digest = response['rules_version']
         system = any(item == {'id': 'system_model', 'status': 'available'} for item in capabilities)
         system_digest = None
         if system:
             arguments = {'workflow': 'system_model', 'operation': 'polish', 'stage': 'start'}
-            if structured.get('library_release') is not None:
-                arguments['library_release'] = structured['library_release']
             system_result = self.request('tools/call', {'name': 'get_writing_guidance', 'arguments': arguments})
             response = system_result.get('structuredContent')
             if system_result.get('isError') or not isinstance(response, dict) or response.get('workflow') != 'system_model' or not response.get('guidance') or not re.fullmatch(r'[0-9a-f]{64}', str(response.get('rules_version', ''))):
                 raise CheckError('System Model retrieval failed; service upgrade or operator review is required')
-            if response.get('library_release') != structured.get('library_release') or response.get('api_version') != api or response.get('api_contract') != contract:
-                raise CheckError('System Model did not retain the requested task release')
+            if not compatible_metadata(response):
+                raise CheckError('System Model changed the API contract')
             system_digest = response['rules_version']
         results = any(item == {'id': 'results', 'status': 'available'} for item in capabilities)
         results_digest = None
         if results:
             arguments = {'workflow': 'results', 'operation': 'polish', 'stage': 'start'}
-            if structured.get('library_release') is not None:
-                arguments['library_release'] = structured['library_release']
             response_result = self.request('tools/call', {'name': 'get_writing_guidance', 'arguments': arguments})
             response = response_result.get('structuredContent')
             if response_result.get('isError') or not isinstance(response, dict) or response.get('workflow') != 'results' or not response.get('guidance') or not re.fullmatch(r'[0-9a-f]{64}', str(response.get('rules_version', ''))):
                 raise CheckError('Results retrieval failed; service upgrade or operator review is required')
-            if response.get('library_release') != structured.get('library_release') or response.get('api_version') != api or response.get('api_contract') != contract:
-                raise CheckError('Results did not retain the requested task release/API identity')
+            if not compatible_metadata(response):
+                raise CheckError('Results changed the API contract/API identity')
             results_digest = response['rules_version']
         added_digests = {}
-        for workflow, scope in [('whole_paper', {'operation':'polish', 'section':'abstract'}), ('shared', {'operation':'guide', 'module':'notation'}), ('language_polish', {'operation':'polish','language':'en','register':'academic'}), ('figure_prompt', {'operation':'prompt'})]:
+        for workflow, scope in [('algorithm', {'operation':'polish'}), ('whole_paper', {'operation':'polish', 'section':'abstract'}), ('shared', {'operation':'guide', 'module':'notation'}), ('language_polish', {'operation':'polish','language':'en','register':'academic'}), ('figure_prompt', {'operation':'prompt'})]:
             available = any(item == {'id':workflow, 'status':'available'} for item in capabilities)
             if not available:
                 continue
             arguments = {'workflow':workflow, 'stage':'start', **scope}
-            if structured.get('library_release') is not None:
-                arguments['library_release'] = structured['library_release']
             retrieved = self.request('tools/call', {'name':'get_writing_guidance', 'arguments':arguments})
             response = retrieved.get('structuredContent')
             if retrieved.get('isError') or not isinstance(response,dict) or response.get('workflow') != workflow or not response.get('guidance') or not re.fullmatch(r'[0-9a-f]{64}', str(response.get('rules_version',''))):
                 raise CheckError('Manuscript/shared guidance unavailable; upgrade or ask the operator')
-            if any(response.get(field) != structured.get(field) for field in ['library_release','api_version','api_contract']):
-                raise CheckError('Manuscript/shared guidance changed the task release/API identity')
+            if not compatible_metadata(response):
+                raise CheckError('Manuscript/shared guidance changed the API contract')
             if any(response.get(field) != scope[field] for field in ('language','register') if field in scope):
                 raise CheckError('Language selectors changed during retrieval')
             added_digests[workflow] = response['rules_version']
         return {'https': True, 'mcp_tool': 'get_writing_guidance', 'rules_version': structured['rules_version'],
                 'api_version': api, 'api_contract': contract or 'legacy-major-1', 'mcp_version': structured.get('mcp_version'),
                 'language_polish_available':'language_polish' in added_digests, 'figure_prompt_available':'figure_prompt' in added_digests,
-                'whole_paper_available':'whole_paper' in added_digests, 'shared_available':'shared' in added_digests,
+                'algorithm_available':'algorithm' in added_digests, 'whole_paper_available':'whole_paper' in added_digests, 'shared_available':'shared' in added_digests,
                 'added_rules_versions':added_digests, 'results_available': results, 'results_rules_version': results_digest,
                 'system_model_available': system, 'system_model_rules_version': system_digest,
                 'related_work_available': related, 'related_work_rules_version': related_digest,

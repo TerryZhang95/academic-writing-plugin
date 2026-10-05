@@ -1,0 +1,4 @@
+interface:
+  display_name: "Academic Algorithm"
+  short_description: "Write algorithm sections using private MCP guidance"
+  default_prompt: "Use $academic-algorithm-mcp to write this algorithm section with consistent prose, equations and pseudocode."
