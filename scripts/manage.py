@@ -14,7 +14,7 @@ PACKAGE = Path(__file__).resolve().parents[1]
 SELECTOR = 'academic-writing@academic-writing-public'
 MARKET = 'academic-writing-public'
 SKILL = 'academic-writing:academic-introduction-mcp'
-SKILLS = (SKILL, 'academic-writing:academic-related-work-mcp', 'academic-writing:academic-system-model-mcp', 'academic-writing:academic-results-mcp', 'academic-writing:academic-whole-paper-mcp', 'academic-writing:academic-execution-mcp', 'academic-writing:academic-language-polish-mcp', 'academic-writing:academic-figure-prompt-mcp')
+SKILLS = (SKILL, 'academic-writing:academic-related-work-mcp', 'academic-writing:academic-system-model-mcp', 'academic-writing:academic-algorithm-mcp', 'academic-writing:academic-results-mcp', 'academic-writing:academic-whole-paper-mcp', 'academic-writing:academic-execution-mcp', 'academic-writing:academic-language-polish-mcp', 'academic-writing:academic-figure-prompt-mcp')
 
 
 def run(codex, args, env):

@@ -28,3 +28,5 @@ Citation scope is supplied bibliography formatting and internal key/metadata con
 Apply returned guidance to the actual output; report inspected sections/files, changed artifacts, registry state, check scope and unresolved evidence/dependencies. Missing material is not a full-manuscript pass. Do not fabricate claims/proofs/results, save guidance as a local core skill or dump rules into the paper. Writing-quality and scientific validity are not established by tool success.
 
 Include `client_contract: "academic-guidance-v1"` in every `get_writing_guidance` call, including checks and pinned-release calls. This selects the public naming contract without changing the fixed writing rules.
+
+For scoped algorithm writing, use the available algorithm capability and the algorithm entrypoint with the same fixed rules version. New snapshots provide complete algorithm writing and block-format guidance; historical method coverage remains limited. Do not change pins to obtain a missing capability.
