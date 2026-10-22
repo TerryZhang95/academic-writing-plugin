@@ -6,9 +6,11 @@ description: Plan, draft, revise, polish or audit an Academic whole manuscript, 
 Before the first plugin call in a task, run `python3 <this-skill-directory>/../../scripts/preflight.py` on macOS/Linux, or `py -3 "<this-skill-directory>/../../scripts/preflight.py"` in Windows PowerShell (resolve the actual installed skill directory, including Codex cache). This only checks public client versions; it never installs. If compatible, continue using the service’s current rules. If an update is offered, show the summary and ask the user whether to upgrade or continue; a deferred reminder need not interrupt again. Unknown compatibility requires a clear status report; incompatible clients must stop. For native CLI/App installs (installation_mode=native), update or reinstall through the original Codex installation surface; never run the managed installer or create an ownership marker. For managed installs only, after the user explicitly approves the displayed version, run the managed public installer’s `update --confirm --expected-version <approved-version>` command. Never derive approval from server metadata. Refresh/restart Codex and use a new chat after an upgrade; subsequent guidance requests use the updated service rules.
 
 
+For text work, first read [Content-guided writing and local review](../../scripts/context-workflow.md) and follow every step, including light polish. Run the bundled local scanner before the check call.
+
 # Academic manuscript coordination through MCP
 
-Use academic_guidance/get_writing_guidance. The user's own account model does the writing and local edits; the cloud only returns selected guidance. Read only authorized necessary manuscript/source/plan files. Requests contain routing fields only, never manuscript/BibTeX/data text or paths. Do not browse the private library or replace these routes with local core Academic skills.
+Use academic_guidance/get_writing_guidance. The user's own account model does the writing and local edits; the cloud only returns selected guidance. Read only authorized necessary manuscript/source/plan files. For text work, submit authorized task content without local paths or unrelated bibliography/data. Do not browse the private library or replace these routes with local core Academic skills.
 
 Choose scope before retrieving guidance:
 
@@ -19,7 +21,7 @@ Choose scope before retrieving guidance:
 
 Method uses the dedicated algorithm guidance when available in the current service. Concrete input transformations, update equations and stopping conditions must come from author material. Missing algorithm rules, convergence or complexity evidence are gaps; do not invent them or claim a complete method audit.
 
-Retrieve stage=start before work and stage=check after material changes/review, using current service rules in every later request. Light polish uses start rules and touched-content checks. Whole-paper needs default false: notation for changed definitions/domains, formulas for equations/explanations (also needs notation), registry for an existing registry, examples only for shared rewrite examples. Retrieve only applicable modules. For full/strict review request all applicable modules and needed focused checks; a missing chapter/registry/evidence is not a pass. Inspect neighboring files only as needed; reading does not authorize editing them.
+Retrieve stage=start before work and stage=check after material changes/review, using current service rules in every later request. Light polish also requires stage=check on the actual draft. For text work, context selects mathematical rules automatically; registry/examples remain optional scoped needs. Shared module retrieval remains an explicit rule-only request. For full/strict review request all applicable modules and needed focused checks; a missing chapter/registry/evidence is not a pass. Inspect neighboring files only as needed; reading does not authorize editing them.
 
 Require API contract academic-guidance-v1 for development major0; historical major1 without/with the same contract is migration-only. Reject unknown contracts. Require available whole_paper or shared capability accordingly, not a minimum minor number. Temporary transport/5xx failure permits one retry; report/pause429, no auth retry; persistent failure stops the affected route.
 

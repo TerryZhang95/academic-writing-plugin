@@ -50,7 +50,7 @@ def extract(events, operation):
         calls.append({'tool': tool, 'server': server, 'operation': arguments.get('operation'),
                       'stage': arguments.get('stage'), 'success': success,
                       'rules_version': structured.get('rules_version') if isinstance(structured, dict) else None})
-    stages = {'start'} if operation == 'polish' else {'start', 'check'}
+    stages = {'start', 'check'}
     observed = {call['stage'] for call in calls if call['success'] and call['operation'] == operation}
     return final, calls, stages <= observed
 

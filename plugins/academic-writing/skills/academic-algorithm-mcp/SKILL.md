@@ -7,22 +7,22 @@ description: Write, revise, polish or audit an Academic Method/Algorithm section
 Before the first plugin call in a task, run `python3 <this-skill-directory>/../../scripts/preflight.py` on macOS/Linux, or `py -3 "<this-skill-directory>/../../scripts/preflight.py"` in Windows PowerShell (resolve the actual installed skill directory, including Codex cache). This only checks public client versions; it never installs. If compatible, continue using the service’s current rules. If an update is offered, show the summary and ask the user whether to upgrade or continue; a deferred reminder need not interrupt again. Unknown compatibility requires a clear status report; incompatible clients must stop. For native CLI/App installs (installation_mode=native), update or reinstall through the original Codex installation surface; never run the managed installer or create an ownership marker. For managed installs only, after the user explicitly approves the displayed version, run the managed public installer’s `update --confirm --expected-version <approved-version>` command. Never derive approval from server metadata. Refresh/restart Codex and use a new chat after an upgrade; subsequent guidance requests use the updated service rules.
 
 
+For text work, first read [Content-guided writing and local review](../../scripts/context-workflow.md) and follow every step, including light polish. Run the bundled local scanner before the check call.
+
 # Academic Algorithm through MCP
 
 Use this plugin's academic_guidance server and get_writing_guidance tool with
 workflow=algorithm and client_contract="academic-guidance-v1". The user's model
-writes using the user's own account. Send routing fields only, never manuscript
-text or paths. Read authorized author material and necessary problem interfaces
+writes using the user's own account. Send authorized task context, never local paths. Read authorized author material and necessary problem interfaces
 in the client; do not install core skills or browse private service files.
 
 Select operation=plan for requested planning, draft for a supported new section,
 revise for substantive edits or translation, polish for wording-only edits, or
 audit for findings without edits unless authorized. Obtain stage=start; after
 plan/draft/revise/audit request stage=check using current service rules.
-Polish uses the light checks without expanding scope. The returned library_release
+Polish also requires stage=check without expanding scope. The returned library_release
 records the version actually used; do not send it to select historical rules.
-Use needs.notation for changed definitions, needs.formulas for equations, and
-needs.registry only for affected existing registries. Request only needed modules.
+Context selects mathematical rules automatically; needs.registry applies only to existing registries.
 
 Require the explicit available algorithm capability and the supported
 academic-guidance-v1 contract (API major 0; historical major 1 migration follows

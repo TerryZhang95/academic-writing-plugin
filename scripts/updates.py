@@ -14,7 +14,13 @@ import zipfile
 from connection import CheckError
 from platform_support import safe_path, exclusive_lock, managed_installation_owned
 
-ALLOWED = frozenset(['.agents/plugins/marketplace.json', 'README.md', 'compatibility.json', 'plugins/academic-writing/.codex-plugin/plugin.json', 'plugins/academic-writing/.mcp.json', 'plugins/academic-writing/README.md', 'plugins/academic-writing/scripts/bridge.py', 'plugins/academic-writing/scripts/platform_support.py', 'plugins/academic-writing/scripts/preflight.py', 'plugins/academic-writing/scripts/version_check.py', 'plugins/academic-writing/skills/academic-algorithm-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-algorithm-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-execution-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-execution-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-figure-prompt-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-figure-prompt-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-introduction-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-introduction-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-language-polish-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-language-polish-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-related-work-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-related-work-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-results-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-results-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-system-model-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-system-model-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-whole-paper-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-whole-paper-mcp/agents/openai.yaml', 'scripts/codex_app.py', 'scripts/connection.py', 'scripts/manage.py', 'scripts/platform_support.py', 'scripts/run_writing_acceptance.py', 'scripts/updates.py', 'scripts/version_check.py'])
+ALLOWED = frozenset(['.agents/plugins/marketplace.json', 'README.md', 'compatibility.json', 'plugins/academic-writing/.codex-plugin/plugin.json', 'plugins/academic-writing/.mcp.json', 'plugins/academic-writing/README.md', 'plugins/academic-writing/scripts/abbreviation_review.py', 'plugins/academic-writing/scripts/artifact_review.py', 'plugins/academic-writing/scripts/bridge.py', 'plugins/academic-writing/scripts/context-workflow.md', 'plugins/academic-writing/scripts/context_review.py', 'plugins/academic-writing/scripts/platform_support.py', 'plugins/academic-writing/scripts/preflight.py', 'plugins/academic-writing/scripts/version_check.py', 'plugins/academic-writing/skills/academic-algorithm-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-algorithm-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-execution-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-execution-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-figure-prompt-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-figure-prompt-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-introduction-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-introduction-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-language-polish-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-language-polish-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-related-work-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-related-work-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-results-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-results-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-system-model-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-system-model-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-whole-paper-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-whole-paper-mcp/agents/openai.yaml', 'scripts/codex_app.py', 'scripts/connection.py', 'scripts/manage.py', 'scripts/platform_support.py', 'scripts/run_writing_acceptance.py', 'scripts/updates.py', 'scripts/version_check.py'])
+LEGACY_ALLOWED = ALLOWED - {
+    "plugins/academic-writing/scripts/abbreviation_review.py",
+    "plugins/academic-writing/scripts/artifact_review.py",
+    "plugins/academic-writing/scripts/context_review.py",
+    "plugins/academic-writing/scripts/context-workflow.md",
+}
 MAX_PACKAGE = 1048576
 MAX_EXPANDED = 2097152
 GITHUB = 'https://github.com/TerryZhang95/academic-writing-plugin'
@@ -141,7 +147,12 @@ def check_update(home, *, loaded_version=None, defer=False, force=False):
 def extract(data, stage, expected, base):
     with zipfile.ZipFile(__import__('io').BytesIO(data)) as archive:
         members=archive.infolist()
-        if len(members)!=len(ALLOWED) or len(members)>64 or sum(i.file_size for i in members)>MAX_EXPANDED:
+        expected_version = version(expected)
+        inventories = [ALLOWED]
+        if expected_version is not None and expected_version <= (0, 1, 13):
+            inventories.append(LEGACY_ALLOWED)
+        inventory = frozenset(i.filename[len('academic-writing/'):] for i in members if i.filename.startswith('academic-writing/'))
+        if inventory not in inventories or len(members)!=len(inventory) or len(members)>64 or sum(i.file_size for i in members)>MAX_EXPANDED:
             raise CheckError('Unexpected package inventory or expanded size')
         found=set()
         for item in members:
@@ -150,12 +161,12 @@ def extract(data, stage, expected, base):
                 raise CheckError('Unexpected archive root')
             relative=name[len('academic-writing/'):]
             mode=item.external_attr>>16
-            if relative not in ALLOWED or relative in found or item.is_dir() or item.flag_bits&1 or stat.S_IFMT(mode) not in (0,stat.S_IFREG) or item.file_size>150000:
+            if relative not in inventory or relative in found or item.is_dir() or item.flag_bits&1 or stat.S_IFMT(mode) not in (0,stat.S_IFREG) or item.file_size>150000:
                 raise CheckError('Forbidden package member')
             found.add(relative)
             target=stage/relative; target.parent.mkdir(parents=True,exist_ok=True)
             target.write_bytes(archive.read(item))
-        if found!=ALLOWED or current(stage)!=expected:
+        if found!=inventory or current(stage)!=expected:
             raise CheckError('Package version/inventory mismatch')
         if origin(stage)!=base:
             raise CheckError('Package changes the trusted MCP service')
@@ -193,7 +204,7 @@ def _update(home, *, confirm, expected_version, install_check):
                     raise CheckError('Old files restored; Codex registration recovery needs the installer check command') from None
             raise CheckError('Upgrade failed; previous files and Codex registration restored') from None
     shutil.rmtree(backup)
-    return {'updated':True,'version':expected_version,'restart_required':True,'message':'Refresh/restart Codex and open a new chat before using the new version. Existing tasks keep their selected rules version.'}
+    return {'updated':True,'version':expected_version,'restart_required':True,'message':'Refresh/restart Codex and open a new chat before using the new version. Follow-up guidance and new submissions use current service rules.'}
 
 
 def update(home, **options):
