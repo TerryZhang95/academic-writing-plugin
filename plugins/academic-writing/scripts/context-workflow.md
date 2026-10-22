@@ -1,6 +1,6 @@
 # Content-guided local writing and review
 
-Use this flow for every text-writing operation, including polish, plans, captions and audits. Plot/diagram operations and standalone shared-rule retrieval retain their routes. MCP selects existing skill rules and organizes context without a model. Its execution prompt guides the current user-account model; it does not launch another inference call or perform file operations.
+For text work, including polish, plans, captions and audits, retrieve rules and context, then generate and review with the current user-account model. MCP runs no model or file operations. Plot/diagram and standalone shared-rule routes remain separate.
 
 ## Prepare local scope
 
