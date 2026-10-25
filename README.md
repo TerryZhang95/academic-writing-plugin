@@ -145,6 +145,12 @@ python3 ~/.codex/academic-writing-distribution/scripts/manage.py uninstall
 
 In PowerShell, set `$manager` as shown above and run `py -3 $manager uninstall`.
 
+## Development candidate
+
+This branch prepares client 0.1.14. The content-guided writing and local review features below require the candidate service and are not included in the latest published client 0.1.13. Use the [latest release](https://github.com/TerryZhang95/academic-writing-plugin/releases/latest) for the published bundle. Source changes and release preparation do not mean the service has been deployed.
+
+The fixed cloud CSV executor supports line and bar charts in PNG/PDF. Editable SVG, multi-panel assembly, table production and editable PowerPoint are not provided by that executor. Other outputs depend on separately available and authorized client tools.
+
 ## Content-guided writing
 
 Text-writing tasks send the authorized passage and necessary plan to MCP for transient context analysis. The service automatically includes formula and notation rules when mathematics is present or planned, without a formulas flag. It does not run a model, retain manuscript content or log text. Generation and a separate review run in the current Codex session using the user’s account. A local scanner inventories displays and flags candidates for semantic review; its output is not a correctness verdict.
