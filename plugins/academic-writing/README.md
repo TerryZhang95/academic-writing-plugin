@@ -26,3 +26,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 Algorithm writing uses the algorithm entrypoint for section prose, pseudocode and checks. Experimental evaluation remains with Results.
+
+## Content-guided writing
+
+Text-writing tasks send the authorized passage and necessary plan to MCP for transient context analysis. The service automatically includes formula and notation rules when mathematics is present or planned, without a formulas flag. It does not run a model, retain manuscript content or log text. Generation and a separate review run in the current Codex session using the user’s account. A local scanner inventories displays and flags candidates for semantic review; its output is not a correctness verdict.
+
+The updated client requires the service’s `context_preparation` capability. Light polish also checks the actual draft. Explicit editing limits are preserved; unresolved issues are reported separately from author prose. A passed review covers only the inspected content and does not prove scientific correctness.
+
+For the first managed update from a client without the context files, use `scripts/manage.py update --confirm --expected-version 0.1.14` from the new downloaded bundle. The older updater rejects the expanded inventory. Native installations update through their original Codex installation surface. Released packages remain unchanged.
+
+## Local execution and abbreviation review
+
+MCP returns a scoped execution prompt and symbolic tasks; the current Codex session performs the file operations and review. Existing directories and user targets take precedence. New manuscript sections and plans use the supplied layout rules; wording polish does not move files or split sections.
+
+Academic writing includes the full abbreviation checks. The local scanner keeps Abstract and body definitions separate, follows the final body reading order and reports unresolved macro/registry evidence. Full strict manuscript checks may create an internal abbreviation table from supported definitions; local polish does not create one automatically. Explicit read-only limits take precedence.
+
+The bundled artifact checker compares actual files, authorized changes, references and the last checked text digests. Its evidence-consistent result confirms correspondence between artifacts and review records, not scientific correctness. Use the service's declared local_execution and abbreviation_review capabilities; missing support requires an upgrade rather than a silent fallback.

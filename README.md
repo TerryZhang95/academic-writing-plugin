@@ -10,7 +10,7 @@ The plugin brings writing skills and a connected guidance service together in on
 
 | Function | What it helps you do |
 | --- | --- |
-| Section writing | Plan, draft and revise Introductions, Related Work, System Models and Results with guidance tailored to each section. |
+| Section writing | Plan, draft and revise Introductions, Related Work, System Models, Methods/Algorithms and Results with guidance tailored to each section. |
 | Whole-paper writing and review | Coordinate sections, revise the manuscript's argument and check consistency across claims, notation and terminology. Support also covers Abstracts, Conclusions, Problem Formulations, Analysis and Appendices. |
 | Language polishing | Polish English and Chinese prose for clear, natural academic or professional expression while preserving meaning and technical content. |
 | Reference checks | Check supplied BibTeX entries and LaTeX citation keys for missing keys, duplicates and metadata issues. Verify DOI metadata when requested. |
@@ -77,7 +77,7 @@ For Methods/Algorithms, provide the algorithm steps, inputs, outputs and stoppin
 
 For reference checks, provide the relevant `.bib` and `.tex` files and request DOI verification explicitly if needed. For plotting, provide the data file, selected columns, units and intended comparison. For schematic figures, describe the components and their relationships, and specify whether you need a plan, a generation prompt or a rendered image.
 
-Writing guidance is retrieved without uploading manuscript text. When you request the cloud reference checker or CSV plotting tool, the selected files are uploaded for that task.
+Text-writing tasks send the authorized passage and necessary plan for transient context analysis, as described below. Rule-only requests send routing fields. Cloud reference checks and CSV plotting upload only the files selected for that task.
 
 ## Update
 
@@ -144,3 +144,25 @@ python3 ~/.codex/academic-writing-distribution/scripts/manage.py uninstall
 ```
 
 In PowerShell, set `$manager` as shown above and run `py -3 $manager uninstall`.
+
+## Development candidate
+
+This branch prepares client 0.1.14. The content-guided writing and local review features below require the candidate service and are not included in the latest published client 0.1.13. Use the [latest release](https://github.com/TerryZhang95/academic-writing-plugin/releases/latest) for the published bundle. Source changes and release preparation do not mean the service has been deployed.
+
+The fixed cloud CSV executor supports line and bar charts in PNG/PDF. Editable SVG, multi-panel assembly, table production and editable PowerPoint are not provided by that executor. Other outputs depend on separately available and authorized client tools.
+
+## Content-guided writing
+
+Text-writing tasks send the authorized passage and necessary plan to MCP for transient context analysis. The service automatically includes formula and notation rules when mathematics is present or planned, without a formulas flag. It does not run a model, retain manuscript content or log text. Generation and a separate review run in the current Codex session using the user’s account. A local scanner inventories displays and flags candidates for semantic review; its output is not a correctness verdict.
+
+The updated client requires the service’s `context_preparation` capability. Light polish also checks the actual draft. Explicit editing limits are preserved; unresolved issues are reported separately from author prose. A passed review covers only the inspected content and does not prove scientific correctness.
+
+For the first managed update from a client without the context files, use `scripts/manage.py update --confirm --expected-version 0.1.14` from the new downloaded bundle. The older updater rejects the expanded inventory. Native installations update through their original Codex installation surface. Released packages remain unchanged.
+
+## Local execution and abbreviation review
+
+MCP returns a scoped execution prompt and symbolic tasks; the current Codex session performs the file operations and review. Existing directories and user targets take precedence. New manuscript sections and plans use the supplied layout rules; wording polish does not move files or split sections.
+
+Academic writing includes the full abbreviation checks. The local scanner keeps Abstract and body definitions separate, follows the final body reading order and reports unresolved macro/registry evidence. Full strict manuscript checks may create an internal abbreviation table from supported definitions; local polish does not create one automatically. Explicit read-only limits take precedence.
+
+The bundled artifact checker compares actual files, authorized changes, references and the last checked text digests. Its evidence-consistent result confirms correspondence between artifacts and review records, not scientific correctness. Use the service's declared local_execution and abbreviation_review capabilities; missing support requires an upgrade rather than a silent fallback.

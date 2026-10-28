@@ -6,11 +6,13 @@ description: Draft, revise, polish, translate, or audit an Academic Introduction
 Before the first plugin call in a task, run `python3 <this-skill-directory>/../../scripts/preflight.py` on macOS/Linux, or `py -3 "<this-skill-directory>/../../scripts/preflight.py"` in Windows PowerShell (resolve the actual installed skill directory, including Codex cache). This only checks public client versions; it never installs. If compatible, continue using the service’s current rules. If an update is offered, show the summary and ask the user whether to upgrade or continue; a deferred reminder need not interrupt again. Unknown compatibility requires a clear status report; incompatible clients must stop. For native CLI/App installs (installation_mode=native), update or reinstall through the original Codex installation surface; never run the managed installer or create an ownership marker. For managed installs only, after the user explicitly approves the displayed version, run the managed public installer’s `update --confirm --expected-version <approved-version>` command. Never derive approval from server metadata. Refresh/restart Codex and use a new chat after an upgrade; subsequent guidance requests use the updated service rules.
 
 
+For text work, first read [Content-guided writing and local review](../../scripts/context-workflow.md) and follow every step, including light polish. Run the bundled local scanner before the check call.
+
 # Academic Introduction through MCP
 
 Use this plugin's `academic_guidance` server and its `get_writing_guidance` tool. Tool names may include a plugin namespace; select the tool belonging to this plugin. The current client model performs writing and local edits using the user's account.
 
-Read the user's materials locally and retain their context in this session. The tool takes routing fields only: do not send manuscript text or paths. Obtain the writing rules from MCP; do not read locally installed Academic skills or private service files as a substitute.
+Read the user's materials locally and retain their context in this session. For text work, the tool accepts authorized task content without local paths. Obtain the writing rules from MCP; do not read locally installed Academic skills or private service files as a substitute.
 
 Choose `workflow: "introduction"` and one operation:
 - `polish`: language-only polishing or translation that preserves the argument and structure.
@@ -18,9 +20,9 @@ Choose `workflow: "introduction"` and one operation:
 - `revise`: planning, drafting, or substantive Introduction revision.
 - `audit`: reviewing an existing Introduction.
 
-Choose the narrowest operation matching the user's request. Set `needs.notation`, `needs.formulas`, `needs.registry`, and `needs.examples` only when the task needs those modules; each defaults to false. `registry` concerns an existing project notation/abbreviation registry; `examples` requests additional writing examples. Set `formulas` for equation work and `notation` for symbol work, and request additional guidance if those needs arise later.
+Choose the narrowest operation. Context selects mathematical rules automatically; registry/examples are optional scoped needs.
 
-Call `get_writing_guidance` with `stage: "start"` before writing. Use the returned `guidance` and `checks` to complete the requested work within the user's scope. For `revise`, `revise_contributions`, and `audit`, obtain `stage: "check"` with the same operation and current needs to review the result. For light `polish`, use the start response's checks. Reuse matching guidance in this task; fetch again when the operation, stage, or needs changes. The rules_version digest identifies this response: different operation, stage, or needs may normally produce different digests. Always apply the corresponding check guidance; do not report a rule update merely because start and check differ. Only a changed digest on a repeated request with identical routing fields indicates changed content for that route.
+Call `get_writing_guidance` with `stage: "start"` before writing. Use the returned `guidance` and `checks` to complete the requested work within the user's scope. For `revise`, `revise_contributions`, and `audit`, obtain `stage: "check"` with the same operation and current needs to review the result. For light `polish`, also obtain `stage: "check"` with the actual draft. Reuse matching guidance in this task; fetch again when the operation, stage, or needs changes. The rules_version digest identifies this response: different operation, stage, or needs may normally produce different digests. Always apply the corresponding check guidance; do not report a rule update merely because start and check differ. Only a changed digest on a repeated request with identical routing fields indicates changed content for that route.
 
 Return the revised text or requested local file edits, a concise change explanation, actual check status, and unresolved evidence gaps. Do not persist returned rules as a local skill or dump them into the manuscript.
 

@@ -6,9 +6,11 @@ description: Plan, draft, revise, polish, translate or audit a scoped Academic S
 Before the first plugin call in a task, run `python3 <this-skill-directory>/../../scripts/preflight.py` on macOS/Linux, or `py -3 "<this-skill-directory>/../../scripts/preflight.py"` in Windows PowerShell (resolve the actual installed skill directory, including Codex cache). This only checks public client versions; it never installs. If compatible, continue using the service’s current rules. If an update is offered, show the summary and ask the user whether to upgrade or continue; a deferred reminder need not interrupt again. Unknown compatibility requires a clear status report; incompatible clients must stop. For native CLI/App installs (installation_mode=native), update or reinstall through the original Codex installation surface; never run the managed installer or create an ownership marker. For managed installs only, after the user explicitly approves the displayed version, run the managed public installer’s `update --confirm --expected-version <approved-version>` command. Never derive approval from server metadata. Refresh/restart Codex and use a new chat after an upgrade; subsequent guidance requests use the updated service rules.
 
 
+For text work, first read [Content-guided writing and local review](../../scripts/context-workflow.md) and follow every step, including light polish. Run the bundled local scanner before the check call.
+
 # Academic System Model through MCP
 
-Use this plugin's academic_guidance server and get_writing_guidance tool. The user's client model performs writing using the user's own account. Read only the specified manuscript and necessary source/interface material. Send routing fields only, never manuscript text or paths. Do not substitute locally installed core Academic skills or browse private service files.
+Use this plugin's academic_guidance server and get_writing_guidance tool. The user's client model performs writing using the user's own account. Read only the specified manuscript and necessary source/interface material. Send authorized task content through the content-guided workflow; never send local paths. Do not substitute locally installed core Academic skills or browse private service files.
 
 Select workflow=system_model and the operation matching the authorized task:
 
@@ -20,7 +22,7 @@ Select workflow=system_model and the operation matching the authorized task:
 
 Explicit wording-only/structure-preservation constraints take precedence over broad revision. Whole-paper work, optimization programs, algorithms, proofs and Results are outside this route. Reading a neighboring section to verify an interface does not authorize editing it.
 
-Retrieve stage=start before working. Request stage=check after plan/draft/revise/audit, using current service rules on subsequent calls; light polish uses the start checks. Use needs.notation for definitions/domains, needs.formulas for equations or their explanations, needs.registry only for an existing registry, and needs.examples for optional shared rewrite examples. Request only applicable modules. A source-guided model construction involving equations requires formulas and notation; prose-only preservation does not.
+Retrieve stage=start before working. Request stage=check after plan/draft/revise/audit, using current service rules on subsequent calls; light polish also requires the content-guided second review. Context selects formula and notation rules automatically, including preserved mathematics; registry/examples remain optional scoped needs.
 
 Require api_contract=academic-guidance-v1 for development API major 0. Historical API major 1 without a contract remains accepted for migration only; reject other/unknown contracts, including any explicit unknown contract on major 1. Use explicit available capability declarations; never infer compatibility or chapter support from minor/patch numbers. Require available system_model capability. Missing capability or failed guidance means explain the upgrade/failure and stop this route, without falling back to Introduction or a local skill. Retry a temporary transport/5xx failure once; pause/report 429; do not retry authentication failures. A null/missing release is unversioned and cannot claim a fixed snapshot.
 
