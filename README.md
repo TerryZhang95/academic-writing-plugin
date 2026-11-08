@@ -19,12 +19,16 @@ The plugin brings writing skills and a connected guidance service together in on
 
 The plugin is under active development. Suggestions for additional writing workflows, checks or figure tools are welcome through [GitHub Issues](https://github.com/TerryZhang95/academic-writing-plugin/issues). Describe the task you want to complete and the output you need.
 
+## Release status
+
+Client 0.1.14 is being prepared. The latest published release is 0.1.13; the production service does not yet provide the new text-context capabilities. Use the latest published ZIP for a working installation. Repository-source installs track development code and may require a service upgrade.
+
 ## Installation
 
 ### Codex App
 
-1. Open plugin management and add a custom marketplace.
-2. Enter `TerryZhang95/academic-writing-plugin` as the GitHub source.
+1. Download and extract the [latest published ZIP](https://github.com/TerryZhang95/academic-writing-plugin/releases/latest).
+2. Open plugin management and add the extracted `academic-writing` folder as a local marketplace.
 3. Install and enable **Academic Writing**.
 4. Open a new chat.
 
@@ -32,16 +36,16 @@ You can also download the [release ZIP](https://github.com/TerryZhang95/academic
 
 ### Codex CLI
 
-Run these commands in your terminal:
+Download and extract the latest published ZIP, then run these commands with its actual folder path:
 
 ```sh
-codex plugin marketplace add TerryZhang95/academic-writing-plugin
+codex plugin marketplace add "/path/to/extracted/academic-writing"
 codex plugin add academic-writing@academic-writing-public
 ```
 
 The commands also work in PowerShell. Start a new Codex session after installation.
 
-To install from a ZIP, replace the GitHub source in the first command with the path to the extracted `academic-writing` folder.
+For development only, the GitHub source is `TerryZhang95/academic-writing-plugin`. Confirm service compatibility before using a repository-source candidate.
 
 ### Python installer
 
@@ -89,12 +93,12 @@ Refresh the marketplace source in plugin management, then update or reinstall **
 
 ### CLI
 
-Refresh the repository source and reinstall:
+Download and extract the current published ZIP, then replace the local marketplace source and reinstall:
 
 ```sh
 codex plugin remove academic-writing@academic-writing-public
 codex plugin marketplace remove academic-writing-public
-codex plugin marketplace add TerryZhang95/academic-writing-plugin
+codex plugin marketplace add "/path/to/extracted/academic-writing"
 codex plugin add academic-writing@academic-writing-public
 ```
 

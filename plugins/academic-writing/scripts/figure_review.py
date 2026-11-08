@@ -44,9 +44,12 @@ def inspect(root, name):
         if re.search(br'<!DOCTYPE|<!ENTITY', passive, re.I):
             raise ValueError('SVG entity declarations are not supported')
         svg = ET.fromstring(passive)
+        css_urls = re.findall(r'url\(([^)]*)\)', raw.decode('utf-8'), re.I)
+        if re.search(br'@import', raw, re.I) or any(not v.strip().strip("\"'").startswith('#') for v in css_urls):
+            raise ValueError('External SVG styles are not supported')
         if svg.tag.split('}')[-1] != 'svg':
             raise ValueError('Expected an SVG root')
-        if any(e.tag.split('}')[-1] in ('script', 'foreignObject') or
+        if any(e.tag.split('}')[-1] in ('script', 'foreignObject', 'animate', 'set', 'animateMotion', 'animateTransform') or
                any(k.lower().startswith('on') or (k.split('}')[-1] == 'href' and not v.startswith(('#', 'data:image/png;base64,')))
                    for k, v in e.attrib.items()) for e in svg.iter()):
             raise ValueError('Active or externally linked SVG is not supported')
