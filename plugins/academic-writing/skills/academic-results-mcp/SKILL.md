@@ -8,6 +8,8 @@ Before the first plugin call in a task, run `python3 <this-skill-directory>/../.
 
 For text work, first read [Content-guided writing and local review](../../scripts/context-workflow.md) and follow every step, including light polish. Run the bundled local scanner before the check call.
 
+For figure tasks, follow [Client figure production and review](../../scripts/figure-workflow.md), including actual-image inspection and digest-bound local evidence checks.
+
 # Academic Results through MCP
 
 Use academic_guidance/get_writing_guidance with workflow=results. The user's own client account supplies the model; the cloud returns guidance without running a model. Read only the requested manuscript and necessary supplied/authorized figures, tables, data, settings or calculations. For text work, send authorized task content through the content-guided workflow; never send data tables or local paths. Do not replace this route with local core Academic skills or browse private service files.

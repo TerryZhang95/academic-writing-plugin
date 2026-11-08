@@ -42,3 +42,5 @@ MCP returns a scoped execution prompt and symbolic tasks; the current Codex sess
 Academic writing includes the full abbreviation checks. The local scanner keeps Abstract and body definitions separate, follows the final body reading order and reports unresolved macro/registry evidence. Full strict manuscript checks may create an internal abbreviation table from supported definitions; local polish does not create one automatically. Explicit read-only limits take precedence.
 
 The bundled artifact checker compares actual files, authorized changes, references and the last checked text digests. Its evidence-consistent result confirms correspondence between artifacts and review records, not scientific correctness. Use the service's declared local_execution and abbreviation_review capabilities; missing support requires an upgrade rather than a silent fallback.
+
+Client figure tasks use available local tools, inspect final images and record data, visual and export checks separately. The bundled figure helper checks files and digest-bound records; it does not determine scientific correctness. Text context and local review require the compatible service capabilities.

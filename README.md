@@ -71,7 +71,7 @@ Each guidance request uses the service’s current rules, including requests fro
 
 Ask Codex to use **Academic Writing** and provide the text or files for the task.
 
-The plugin provides multiple skills with agents for section writing, whole-manuscript review, language polishing, schematic figure prompts, reference checks and data plotting. Section-specific guidance covers Introductions, Related Work, Models, Methods/Algorithms and Results.
+The plugin provides nine skill entrypoints for section writing, whole-manuscript review, language polishing, schematic figure prompts, reference checks and data plotting. Section-specific guidance covers Introductions, Related Work, Models, Methods/Algorithms and Results.
 
 For Methods/Algorithms, provide the algorithm steps, inputs, outputs and stopping conditions. The algorithm skill explains the method and checks pseudocode; new blocks use `algorithm` with `algpseudocode`, while existing manuscript packages are preserved. Experimental evaluation stays in Results.
 
@@ -100,7 +100,7 @@ codex plugin add academic-writing@academic-writing-public
 
 ### Python installer
 
-For installations from 0.1.12 or earlier, download and extract the new release, then run the **newly downloaded** `scripts/manage.py update --confirm --expected-version VERSION` against the same Codex home (pass `--home` if you used a custom home). Older installed updaters cannot accept the changed file list. The new manager preserves unrelated settings and restores the previous bundle if its installation check fails.
+For installations from 0.1.13 or earlier, download and extract the new release, then run the **newly downloaded** `scripts/manage.py update --confirm --expected-version VERSION` against the same Codex home (pass `--home` if you used a custom home). Older installed updaters cannot accept the changed file list. The new manager preserves unrelated settings and restores the previous bundle if its installation check fails.
 
 Run the installed manager from outside the installation folder. With the default Codex home, its path is `~/.codex/academic-writing-distribution/scripts/manage.py`.
 
@@ -145,9 +145,9 @@ python3 ~/.codex/academic-writing-distribution/scripts/manage.py uninstall
 
 In PowerShell, set `$manager` as shown above and run `py -3 $manager uninstall`.
 
-## Development candidate
+## Release preparation
 
-This branch prepares client 0.1.14. The content-guided writing and local review features below require the candidate service and are not included in the latest published client 0.1.13. Use the [latest release](https://github.com/TerryZhang95/academic-writing-plugin/releases/latest) for the published bundle. Source changes and release preparation do not mean the service has been deployed.
+This branch prepares client 0.1.14. It also adds local figure production records and digest-bound file checks. The content-guided writing and local review features below require the candidate service and are not included in the latest published client 0.1.13. Use the [latest release](https://github.com/TerryZhang95/academic-writing-plugin/releases/latest) for the published bundle. Source changes and release preparation do not mean the service has been deployed.
 
 The fixed cloud CSV executor supports line and bar charts in PNG/PDF. Editable SVG, multi-panel assembly, table production and editable PowerPoint are not provided by that executor. Other outputs depend on separately available and authorized client tools.
 
@@ -166,3 +166,13 @@ MCP returns a scoped execution prompt and symbolic tasks; the current Codex sess
 Academic writing includes the full abbreviation checks. The local scanner keeps Abstract and body definitions separate, follows the final body reading order and reports unresolved macro/registry evidence. Full strict manuscript checks may create an internal abbreviation table from supported definitions; local polish does not create one automatically. Explicit read-only limits take precedence.
 
 The bundled artifact checker compares actual files, authorized changes, references and the last checked text digests. Its evidence-consistent result confirms correspondence between artifacts and review records, not scientific correctness. Use the service's declared local_execution and abbreviation_review capabilities; missing support requires an upgrade rather than a silent fallback.
+
+## Client figures in 0.1.14
+
+With suitable local tools, quantitative tasks can render lines, grouped bars, scatter plots, empirical CDF/CCDF plots, heatmaps and uncertainty figures from authorized data. Multi-panel layouts and SVG exports depend on the local backend. Provide the selected inputs, units, comparison and requested output formats. Existing project tools and explicit tool choices take precedence.
+
+The model opens final figures and checks data correspondence, readability and export integrity separately. A local helper checks PNG/PDF file envelopes, passive SVG structure and hashes against review records. Embedded raster content in SVG is identified; an SVG extension does not establish editable vector content. File checks do not replace image inspection or scientific review. Missing inputs, tools or unresolved findings remain incomplete.
+
+For combined figure, caption and Results requests, the client checks units, notation and numerical statements across the final artifacts. Text review remains separate from image inspection. Standalone figure tasks do not automatically rewrite manuscript text. Cloud CSV plotting keeps its existing line/bar limits; it does not provide arbitrary plotting or editable PowerPoint output.
+
+The final release remains gated on real model workflow acceptance and deployment of the compatible service. Until those checks pass, use the latest published release rather than treating this branch as a deployed update.
