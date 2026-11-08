@@ -19,12 +19,16 @@ The plugin brings writing skills and a connected guidance service together in on
 
 The plugin is under active development. Suggestions for additional writing workflows, checks or figure tools are welcome through [GitHub Issues](https://github.com/TerryZhang95/academic-writing-plugin/issues). Describe the task you want to complete and the output you need.
 
+## Release status
+
+Client 0.1.14 includes content-guided writing, local text review and client figure records. The compatible guidance service is deployed. Install the latest published release using the methods below.
+
 ## Installation
 
 ### Codex App
 
-1. Open plugin management and add a custom marketplace.
-2. Enter `TerryZhang95/academic-writing-plugin` as the GitHub source.
+1. Download and extract the [latest published ZIP](https://github.com/TerryZhang95/academic-writing-plugin/releases/latest).
+2. Open plugin management and add the extracted `academic-writing` folder as a local marketplace.
 3. Install and enable **Academic Writing**.
 4. Open a new chat.
 
@@ -32,22 +36,22 @@ You can also download the [release ZIP](https://github.com/TerryZhang95/academic
 
 ### Codex CLI
 
-Run these commands in your terminal:
+Download and extract the latest published ZIP, then run these commands with its actual folder path:
 
 ```sh
-codex plugin marketplace add TerryZhang95/academic-writing-plugin
+codex plugin marketplace add "/path/to/extracted/academic-writing"
 codex plugin add academic-writing@academic-writing-public
 ```
 
 The commands also work in PowerShell. Start a new Codex session after installation.
 
-To install from a ZIP, replace the GitHub source in the first command with the path to the extracted `academic-writing` folder.
+You can also install the GitHub marketplace source `TerryZhang95/academic-writing-plugin`. Release archives remain available for a fixed client package.
 
 ### Python installer
 
 Use this method if you want to manage installation, checks, updates and removal with the included script. It requires Codex CLI. Python 3.11 or newer is recommended.
 
-Download [academic-writing-public-0.1.13.zip](https://github.com/TerryZhang95/academic-writing-plugin/releases/download/v0.1.13/academic-writing-public-0.1.13.zip), extract it, and open a terminal in the extracted `academic-writing` folder.
+Download [academic-writing-public-0.1.14.zip](https://github.com/TerryZhang95/academic-writing-plugin/releases/download/v0.1.14/academic-writing-public-0.1.14.zip), extract it, and open a terminal in the extracted `academic-writing` folder.
 
 ```sh
 python3 scripts/manage.py install
@@ -71,7 +75,7 @@ Each guidance request uses the service’s current rules, including requests fro
 
 Ask Codex to use **Academic Writing** and provide the text or files for the task.
 
-The plugin provides multiple skills with agents for section writing, whole-manuscript review, language polishing, schematic figure prompts, reference checks and data plotting. Section-specific guidance covers Introductions, Related Work, Models, Methods/Algorithms and Results.
+The plugin provides nine skill entrypoints for section writing, whole-manuscript review, language polishing, schematic figure prompts, reference checks and data plotting. Section-specific guidance covers Introductions, Related Work, Models, Methods/Algorithms and Results.
 
 For Methods/Algorithms, provide the algorithm steps, inputs, outputs and stopping conditions. The algorithm skill explains the method and checks pseudocode; new blocks use `algorithm` with `algpseudocode`, while existing manuscript packages are preserved. Experimental evaluation stays in Results.
 
@@ -89,18 +93,18 @@ Refresh the marketplace source in plugin management, then update or reinstall **
 
 ### CLI
 
-Refresh the repository source and reinstall:
+Download and extract the current published ZIP, then replace the local marketplace source and reinstall:
 
 ```sh
 codex plugin remove academic-writing@academic-writing-public
 codex plugin marketplace remove academic-writing-public
-codex plugin marketplace add TerryZhang95/academic-writing-plugin
+codex plugin marketplace add "/path/to/extracted/academic-writing"
 codex plugin add academic-writing@academic-writing-public
 ```
 
 ### Python installer
 
-For installations from 0.1.12 or earlier, download and extract the new release, then run the **newly downloaded** `scripts/manage.py update --confirm --expected-version VERSION` against the same Codex home (pass `--home` if you used a custom home). Older installed updaters cannot accept the changed file list. The new manager preserves unrelated settings and restores the previous bundle if its installation check fails.
+For installations from 0.1.13 or earlier, download and extract the new release, then run the **newly downloaded** `scripts/manage.py update --confirm --expected-version VERSION` against the same Codex home (pass `--home` if you used a custom home). Older installed updaters cannot accept the changed file list. The new manager preserves unrelated settings and restores the previous bundle if its installation check fails.
 
 Run the installed manager from outside the installation folder. With the default Codex home, its path is `~/.codex/academic-writing-distribution/scripts/manage.py`.
 
@@ -145,9 +149,7 @@ python3 ~/.codex/academic-writing-distribution/scripts/manage.py uninstall
 
 In PowerShell, set `$manager` as shown above and run `py -3 $manager uninstall`.
 
-## Development candidate
-
-This branch prepares client 0.1.14. The content-guided writing and local review features below require the candidate service and are not included in the latest published client 0.1.13. Use the [latest release](https://github.com/TerryZhang95/academic-writing-plugin/releases/latest) for the published bundle. Source changes and release preparation do not mean the service has been deployed.
+## Figure execution scope
 
 The fixed cloud CSV executor supports line and bar charts in PNG/PDF. Editable SVG, multi-panel assembly, table production and editable PowerPoint are not provided by that executor. Other outputs depend on separately available and authorized client tools.
 
@@ -166,3 +168,13 @@ MCP returns a scoped execution prompt and symbolic tasks; the current Codex sess
 Academic writing includes the full abbreviation checks. The local scanner keeps Abstract and body definitions separate, follows the final body reading order and reports unresolved macro/registry evidence. Full strict manuscript checks may create an internal abbreviation table from supported definitions; local polish does not create one automatically. Explicit read-only limits take precedence.
 
 The bundled artifact checker compares actual files, authorized changes, references and the last checked text digests. Its evidence-consistent result confirms correspondence between artifacts and review records, not scientific correctness. Use the service's declared local_execution and abbreviation_review capabilities; missing support requires an upgrade rather than a silent fallback.
+
+## Client figures in 0.1.14
+
+With suitable local tools, quantitative tasks can render lines, grouped bars, scatter plots, empirical CDF/CCDF plots, heatmaps and uncertainty figures from authorized data. Multi-panel layouts and SVG exports depend on the local backend. Provide the selected inputs, units, comparison and requested output formats. Existing project tools and explicit tool choices take precedence.
+
+The model opens final figures and checks data correspondence, readability and export integrity separately. A local helper checks PNG/PDF file envelopes, passive SVG structure and hashes against review records. Embedded raster content in SVG is identified; an SVG extension does not establish editable vector content. File checks do not replace image inspection or scientific review. Missing inputs, tools or unresolved findings remain incomplete.
+
+For combined figure, caption and Results requests, the client checks units, notation and numerical statements across the final artifacts. Text review remains separate from image inspection. Standalone figure tasks do not automatically rewrite manuscript text. Cloud CSV plotting keeps its existing line/bar limits; it does not provide arbitrary plotting or editable PowerPoint output.
+
+The plugin runs through Codex using the account and tools available in that session. No particular model is required. Validation covers installation, rule retrieval, actual file generation and review; it does not certify scientific conclusions.
