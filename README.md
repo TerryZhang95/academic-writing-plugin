@@ -21,7 +21,7 @@ The plugin is under active development. Suggestions for additional writing workf
 
 ## Release status
 
-Client 0.1.14 is being prepared. The latest published release is 0.1.13; the production service does not yet provide the new text-context capabilities. Use the latest published ZIP for a working installation. Repository-source installs track development code and may require a service upgrade.
+Client 0.1.14 includes content-guided writing, local text review and client figure records. The compatible guidance service is deployed. Install the latest published release using the methods below.
 
 ## Installation
 
@@ -45,13 +45,13 @@ codex plugin add academic-writing@academic-writing-public
 
 The commands also work in PowerShell. Start a new Codex session after installation.
 
-For development only, the GitHub source is `TerryZhang95/academic-writing-plugin`. Confirm service compatibility before using a repository-source candidate.
+You can also install the GitHub marketplace source `TerryZhang95/academic-writing-plugin`. Release archives remain available for a fixed client package.
 
 ### Python installer
 
 Use this method if you want to manage installation, checks, updates and removal with the included script. It requires Codex CLI. Python 3.11 or newer is recommended.
 
-Download [academic-writing-public-0.1.13.zip](https://github.com/TerryZhang95/academic-writing-plugin/releases/download/v0.1.13/academic-writing-public-0.1.13.zip), extract it, and open a terminal in the extracted `academic-writing` folder.
+Download [academic-writing-public-0.1.14.zip](https://github.com/TerryZhang95/academic-writing-plugin/releases/download/v0.1.14/academic-writing-public-0.1.14.zip), extract it, and open a terminal in the extracted `academic-writing` folder.
 
 ```sh
 python3 scripts/manage.py install
@@ -149,9 +149,7 @@ python3 ~/.codex/academic-writing-distribution/scripts/manage.py uninstall
 
 In PowerShell, set `$manager` as shown above and run `py -3 $manager uninstall`.
 
-## Release preparation
-
-This branch prepares client 0.1.14. It also adds local figure production records and digest-bound file checks. The content-guided writing and local review features below require the candidate service and are not included in the latest published client 0.1.13. Use the [latest release](https://github.com/TerryZhang95/academic-writing-plugin/releases/latest) for the published bundle. Source changes and release preparation do not mean the service has been deployed.
+## Figure execution scope
 
 The fixed cloud CSV executor supports line and bar charts in PNG/PDF. Editable SVG, multi-panel assembly, table production and editable PowerPoint are not provided by that executor. Other outputs depend on separately available and authorized client tools.
 
@@ -179,4 +177,4 @@ The model opens final figures and checks data correspondence, readability and ex
 
 For combined figure, caption and Results requests, the client checks units, notation and numerical statements across the final artifacts. Text review remains separate from image inspection. Standalone figure tasks do not automatically rewrite manuscript text. Cloud CSV plotting keeps its existing line/bar limits; it does not provide arbitrary plotting or editable PowerPoint output.
 
-The final release remains gated on real model workflow acceptance and deployment of the compatible service. Until those checks pass, use the latest published release rather than treating this branch as a deployed update.
+The plugin runs through Codex using the account and tools available in that session. No particular model is required. Validation covers installation, rule retrieval, actual file generation and review; it does not certify scientific conclusions.
