@@ -1,6 +1,6 @@
 # Academic Writing Plugin for Codex
 
-Academic Writing helps you plan, draft, revise and review research manuscripts in Codex App and Codex CLI. It provides section-specific guidance for Introductions, Related Work, System Models, Methods/Algorithms and Results, alongside whole-manuscript review, language polishing, reference checks, data plotting and schematic figure prompts.
+Academic Writing helps you plan, draft, revise and review research manuscripts in Codex App and Codex CLI. It provides section-specific guidance for Introductions, Related Work, System Models, Methods/Algorithms and Results, alongside whole-manuscript review, language polishing, reference checks, data plotting, schematic figure prompts and evidence-linked literature comparisons.
 
 Codex has strong writing and revision capabilities and can work directly with manuscript files. This plugin builds on those capabilities with academic writing guidance that connects the research motivation, claims, methods and results. The goal is to make Codex a more useful writing partner throughout manuscript preparation, from an initial outline to a full-paper review.
 
@@ -15,13 +15,36 @@ The plugin brings writing skills and a connected guidance service together in on
 | Language polishing | Polish English and Chinese prose for clear, natural academic or professional expression while preserving meaning and technical content. |
 | Reference checks | Check supplied BibTeX entries and LaTeX citation keys for missing keys, duplicates and metadata issues. Verify DOI metadata when requested. |
 | Data plotting and Results figures | Plot supplied quantitative data, review figures and write Results text and captions based on the provided evidence. |
+| Literature comparison | Build coverage or method comparison tables from specified papers, with cell evidence and Markdown/LaTeX exports. Requires an available comparison capability. |
 | Schematic figures | Plan architecture, workflow, protocol and system diagrams, prepare image-generation prompts and review supplied diagrams. |
 
 The plugin is under active development. Suggestions for additional writing workflows, checks or figure tools are welcome through [GitHub Issues](https://github.com/TerryZhang95/academic-writing-plugin/issues). Describe the task you want to complete and the output you need.
 
 ## Release status
 
-Client 0.1.14 includes content-guided writing, local text review and client figure records. The compatible guidance service is deployed. Install the latest published release using the methods below.
+Published client 0.1.14 includes content-guided writing, local text review and client figure records. The compatible guidance service is deployed. Install the latest published release using the methods below.
+
+The source candidate additionally includes literature comparison; it is not yet
+published or deployed. See [implementation and validation status](COMPARISON-STATUS.md).
+
+## Literature comparison
+
+Ask Codex to compare a specified set of papers by survey coverage or method
+features. The plugin reads available sources in your current chat, retrieves scoped
+guidance and produces comparison.json, criteria.md, comparison.md, comparison.tex,
+comparison-standalone.tex and evidence.md. Unknown or unread evidence stays visible.
+Planning returns a plan; an audit returns findings unless edits are authorized.
+
+Python 3.10+ is required for local exports and is not included. pdftotext enables
+optional PDF hash/page transcription checks. A LaTeX compiler enables PDF previews.
+Zotero, a search connector and separately installed core skills are not required
+for supplied files. Local source paths and full PDFs are not uploaded by the
+comparison guidance route. Use existing verified citation keys only.
+
+For this expanded bundle, managed users upgrading from 0.1.14 must run the installer
+from the new download; the old updater rejects additional files. App and CLI native
+installs update through their original installation channel. Keep earlier release
+archives and comparison version directories.
 
 ## Installation
 
@@ -65,7 +88,7 @@ py -3 scripts/manage.py install
 py -3 scripts/manage.py check
 ```
 
-A successful check lists the nine skill entries and confirms the MCP connection. Restart Codex and open a new chat after installation.
+A successful check lists the ten skill entries and confirms the MCP connection. Restart Codex and open a new chat after installation.
 
 If Codex CLI is outside your `PATH`, pass its executable with `--codex "/path/to/codex"` or set `CODEX_CLI_PATH`. Quote paths that contain spaces. Install into a regular local folder.
 
@@ -75,7 +98,7 @@ Each guidance request uses the service’s current rules, including requests fro
 
 Ask Codex to use **Academic Writing** and provide the text or files for the task.
 
-The plugin provides nine skill entrypoints for section writing, whole-manuscript review, language polishing, schematic figure prompts, reference checks and data plotting. Section-specific guidance covers Introductions, Related Work, Models, Methods/Algorithms and Results.
+The plugin provides ten skill entrypoints for section writing, whole-manuscript review, language polishing, schematic figure prompts, reference checks and data plotting. Section-specific guidance covers Introductions, Related Work, Models, Methods/Algorithms and Results.
 
 For Methods/Algorithms, provide the algorithm steps, inputs, outputs and stopping conditions. The algorithm skill explains the method and checks pseudocode; new blocks use `algorithm` with `algpseudocode`, while existing manuscript packages are preserved. Experimental evaluation stays in Results.
 

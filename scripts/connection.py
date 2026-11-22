@@ -109,6 +109,8 @@ class Connection:
                 if value is not None and (not isinstance(value, str) or len(value) > 32 or not re.fullmatch(r'(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)', value)):
                     return False
             return True
+        comparison_schema = 'literature_comparison' in tools[0].get('inputSchema', {}).get('properties', {}).get('workflow', {}).get('enum', [])
+        comparison_available = comparison_schema and {'id':'literature_comparison', 'status':'available'} in capabilities
         related = any(item == {'id': 'related_work', 'status': 'available'} for item in capabilities)
         related_digest = None
         if related:
@@ -157,7 +159,7 @@ class Connection:
             if any(response.get(field) != scope[field] for field in ('language','register') if field in scope):
                 raise CheckError('Language selectors changed during retrieval')
             added_digests[workflow] = response['rules_version']
-        return {'https': True, 'mcp_tool': 'get_writing_guidance', 'rules_version': structured['rules_version'],
+        return {'literature_comparison': 'available' if comparison_available else 'unavailable', 'https': True, 'mcp_tool': 'get_writing_guidance', 'rules_version': structured['rules_version'],
                 'api_version': api, 'api_contract': contract or 'legacy-major-1', 'mcp_version': structured.get('mcp_version'),
                 'language_polish_available':'language_polish' in added_digests, 'figure_prompt_available':'figure_prompt' in added_digests,
                 'algorithm_available':'algorithm' in added_digests, 'whole_paper_available':'whole_paper' in added_digests, 'shared_available':'shared' in added_digests,

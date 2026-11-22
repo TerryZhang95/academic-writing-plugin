@@ -44,3 +44,12 @@ Academic writing includes the full abbreviation checks. The local scanner keeps 
 The bundled artifact checker compares actual files, authorized changes, references and the last checked text digests. Its evidence-consistent result confirms correspondence between artifacts and review records, not scientific correctness. Use the service's declared local_execution and abbreviation_review capabilities; missing support requires an upgrade rather than a silent fallback.
 
 Client figure tasks use available local tools, inspect final images and record data, visual and export checks separately. The bundled figure helper checks files and digest-bound records; it does not determine scientific correctness. Text context and local review require the compatible service capabilities.
+
+## Literature comparison
+
+Use academic-literature-comparison-mcp for evidence-linked coverage or method tables.
+The entrypoint checks the schema and explicit service capability before sending
+comparison context. The bundled v2 contract and local helpers export six files from
+one canonical JSON input. Python 3.10+ is required, not included; pdftotext and a
+LaTeX compiler enable optional transcription and PDF checks. Source reading and
+semantic review run in the current chat. No additional core skill is required.

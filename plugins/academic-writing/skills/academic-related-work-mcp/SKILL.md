@@ -37,3 +37,8 @@ Return the requested text or file edits, brief changes, actual check status and 
 Include `client_contract: "academic-guidance-v1"` in every `get_writing_guidance` call, including checks. This selects the public naming contract; each call uses current service rules.
 
 Every new guidance request uses current service rules. Do not select historical releases or enforce a task-wide constant `library_release`. Record the returned version as provenance. After an update, apply newly retrieved guidance to the requested work without automatically rewriting previously completed material.
+
+For an authorized standalone comparison matrix, use this plugin's
+academic-literature-comparison-mcp entry only after its schema and explicit
+literature_comparison capability checks succeed. Related Work prose is not a
+matrix export. Full-paper bilingual reading remains outside this plugin.
