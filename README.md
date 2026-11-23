@@ -88,7 +88,7 @@ py -3 scripts/manage.py install
 py -3 scripts/manage.py check
 ```
 
-A successful check lists the ten skill entries and confirms the MCP connection. Restart Codex and open a new chat after installation.
+A successful check discovers all entrypoints bundled with the installed version and confirms the MCP connection. Published 0.1.14 has nine entries; candidate 0.1.15 has ten, including Literature Comparison. Candidate source is not a published release. Restart Codex and open a new chat after installation.
 
 If Codex CLI is outside your `PATH`, pass its executable with `--codex "/path/to/codex"` or set `CODEX_CLI_PATH`. Quote paths that contain spaces. Install into a regular local folder.
 
@@ -98,7 +98,7 @@ Each guidance request uses the service’s current rules, including requests fro
 
 Ask Codex to use **Academic Writing** and provide the text or files for the task.
 
-The plugin provides ten skill entrypoints for section writing, whole-manuscript review, language polishing, schematic figure prompts, reference checks and data plotting. Section-specific guidance covers Introductions, Related Work, Models, Methods/Algorithms and Results.
+The 0.1.15 candidate provides ten skill entrypoints, including Literature Comparison, for section writing, whole-manuscript review, language polishing, schematic figure prompts, reference checks and data plotting. Section-specific guidance covers Introductions, Related Work, Models, Methods/Algorithms and Results.
 
 For Methods/Algorithms, provide the algorithm steps, inputs, outputs and stopping conditions. The algorithm skill explains the method and checks pseudocode; new blocks use `algorithm` with `algpseudocode`, while existing manuscript packages are preserved. Experimental evaluation stays in Results.
 

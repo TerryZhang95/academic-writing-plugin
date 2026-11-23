@@ -37,3 +37,26 @@ rollback can validate the previous nine-entrypoint package as well as the new
 ten-entrypoint package. It also checks that comparison helpers match the cached
 plugin files. Published archives remain unchanged. After review, deploy a compatible service
 before publishing the corresponding client.
+
+## Review fixes — 2026-11-23
+
+LaTeX exports now budget the full column padding against the surrounding
+linewidth. Tables split into at most six comparison columns per part by default;
+--columns-per-part accepts 1–6 for narrower layouts. Parts preserve all columns,
+repeat paper labels, wrap group headers and keep global condition-note numbers.
+The bundled comparison_layout.py provides the same display logic to fragment
+and standalone exports without adding an external Python package.
+
+The two-row, twelve-feature regression now retains F1–F12 across two readable
+parts. Compilation checks also cover ordinary/two-column article fragments,
+long group names, mixed states and the four previously inspected real-paper
+artifacts. Compiler diagnostics, extracted PDF text/bounds and visual review are
+separate from structural export. Unbreakable text, oversized floats and missing
+characters are failures requiring adjustment; a zero compiler exit code alone
+does not establish layout acceptance. A dedicated Linux CI job installs LaTeX and
+Poppler and cannot silently skip these compilation regressions.
+
+Installation guidance now distinguishes nine entrypoints in published 0.1.14
+from ten in candidate 0.1.15. The candidate version is unchanged and remains
+unpublished. Scientific assessments, source evidence and private guidance are
+unchanged by these display fixes.

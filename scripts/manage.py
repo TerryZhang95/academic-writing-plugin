@@ -49,7 +49,7 @@ def check(destination, codex, env, inventory_only=False):
         if cached.is_symlink() or not cached.is_file() or json.loads(cached.read_text(encoding='utf-8')).get('version') != installed_version:
             raise CheckError('Codex cached plugin version was not refreshed')
         if version(installed_version) >= (0, 1, 15):
-            for name in ('comparison_io.py', 'comparison_render.py', 'comparison_sources.py', 'comparison-contract.md'):
+            for name in ('comparison_io.py', 'comparison_render.py', 'comparison_sources.py', 'comparison_layout.py', 'comparison-contract.md'):
                 source = destination / 'plugins/academic-writing/scripts' / name
                 installed = cached.parent.parent / 'scripts' / name
                 if source.is_symlink() or installed.is_symlink() or not source.is_file() or not installed.is_file() or source.read_bytes() != installed.read_bytes():

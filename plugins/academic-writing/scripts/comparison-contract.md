@@ -82,3 +82,27 @@ object of source IDs to PDF paths; never share or upload it. Install pdftotext
 separately if needed. Each excerpt needs pdf_pages and its source needs sha256.
 Missing sources/pages/hashes, changed hashes and mismatched excerpts remain explicit
 failures/pending checks. A text-match checks transcription/location only.
+
+## LaTeX display parts
+
+The default export uses at most six comparison columns per table part and repeats
+the Paper column. `--columns-per-part N` accepts integers 1–6, for example 3 for
+a narrow article column. This is a display option and does not change v2 data.
+Adjacent groups stay together where possible; a larger group is split in order
+and its header is marked continued. Each part is its own table float with Part
+i/m in the caption. The first label is unchanged; later labels append -part-N.
+
+Widths are evaluated against the surrounding LaTeX linewidth after subtracting
+all column padding and a rounding allowance. Group headers wrap within their
+spanned columns. Note numbers come from the entire matrix; each part lists only
+its referenced notes. Markdown retains the full matrix and evidence links.
+The same part renderer is used by fragment and standalone, with readable font
+sizes retained. The bundled comparison_layout.py is a required local dependency
+of comparison_render.py and installs as part of the same plugin.
+
+Exporter output reports PDF layout as not-checked. Compiler exit code zero is not
+layout acceptance: inspect overfull boxes, oversized floats, missing characters,
+page text bounds and the actual pages. Very long unbreakable text or excessive
+row heights may still require permitted shorter labels or a separately reviewed row split
+that preserves all rows; report those limitations rather than claiming a passed PDF. Without a compiler deliver
+the six source/preview files with PDF layout explicitly not checked.

@@ -48,7 +48,11 @@ is not included. Do not install the original comparison skill.
    the actual source/page; record hash changes and mismatches as unresolved.
 6. Run `python3 <this-skill-directory>/../../scripts/comparison_render.py
    <input.json> --criteria <criteria.md> --out <new-version-directory>`.
-   Correct validation failures, then rerun into an unused directory. All six
+   LaTeX defaults to at most six comparison columns per part, preserving all columns
+   in order and repeating the Paper column. For narrow layouts add
+   `--columns-per-part 3` (accepted range 1–6). Group boundaries are preferred;
+   oversized groups continue in the next part. Correct validation failures, then
+   rerun into an unused directory. All six
    required files must exist: comparison.json, criteria.md, comparison.md,
    comparison.tex, comparison-standalone.tex and evidence.md. Helpers validate
    structure and serialize data; they never infer support or verify entailment.
@@ -61,7 +65,12 @@ is not included. Do not install the original comparison skill.
    was authorized, without automatically creating matrix files.
 8. Open the Markdown preview and compare it with JSON/evidence. If a LaTeX
    compiler exists, compile and visually inspect the standalone PDF, fixing
-   wrapping/symbols/clipping or splitting wide tables; otherwise explicitly report
+   wrapping/symbols/clipping. A zero compiler exit code is insufficient: inspect
+   overfull boxes, oversized floats, missing characters and actual first/last columns.
+   Reduce columns per part or use permitted shorter labels when text cannot fit;
+   report excessively tall or unbreakable tables as requiring adjustment. Never
+   shrink the font to hide overflow. Structural export success is separate from
+   PDF layout acceptance; otherwise explicitly report
    PDF layout verification pending. The fragment requires booktabs, TikZ and the
    ComparisonPartial macro from the standalone preamble; keep bibliography keys
    only when actually verified. Unicode/CJK may require a suitable XeLaTeX font.

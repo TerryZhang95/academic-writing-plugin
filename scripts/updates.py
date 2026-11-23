@@ -18,7 +18,7 @@ ALLOWED = frozenset(['.agents/plugins/marketplace.json', 'README.md', 'compatibi
 PRE_COMPARISON_ALLOWED = ALLOWED | {"plugins/academic-writing/scripts/figure_review.py", "plugins/academic-writing/scripts/figure-workflow.md"}
 PRE_FIGURE_ALLOWED = ALLOWED
 ALLOWED = ALLOWED | {"plugins/academic-writing/scripts/figure_review.py", "plugins/academic-writing/scripts/figure-workflow.md"}
-ALLOWED = ALLOWED | {'COMPARISON-STATUS.md', 'plugins/academic-writing/scripts/comparison_sources.py', 'plugins/academic-writing/skills/academic-literature-comparison-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-literature-comparison-mcp/agents/openai.yaml', 'plugins/academic-writing/scripts/comparison_render.py', 'plugins/academic-writing/scripts/comparison-contract.md', 'plugins/academic-writing/scripts/comparison_io.py'}
+ALLOWED = ALLOWED | {'plugins/academic-writing/scripts/comparison_layout.py', 'COMPARISON-STATUS.md', 'plugins/academic-writing/scripts/comparison_sources.py', 'plugins/academic-writing/skills/academic-literature-comparison-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-literature-comparison-mcp/agents/openai.yaml', 'plugins/academic-writing/scripts/comparison_render.py', 'plugins/academic-writing/scripts/comparison-contract.md', 'plugins/academic-writing/scripts/comparison_io.py'}
 LEGACY_ALLOWED = PRE_FIGURE_ALLOWED - {
     "plugins/academic-writing/scripts/abbreviation_review.py",
     "plugins/academic-writing/scripts/artifact_review.py",
