@@ -52,7 +52,7 @@ def exports(data, criteria, columns_per_part=6):
     fragment = tables(data, title, cell_text, footnotes, tex, columns_per_part=columns_per_part)
     standalone = tables(data, title, cell_text, footnotes, tex, standalone=True, columns_per_part=columns_per_part)
     preamble = '\n'.join([r'\documentclass{article}', r'\usepackage[margin=15mm]{geometry}', r'\usepackage{booktabs,tikz}', r'\usepackage{iftex}', r'\ifPDFTeX\else\usepackage{fontspec}\setmainfont{Latin Modern Roman}\fi', r'\newcommand{\ComparisonPartial}{\tikz[baseline=-0.5ex]{\draw (0,0) circle (0.65ex);\fill (0,0.65ex) arc (90:270:0.65ex)--cycle;}}', r'\begin{document}', ''])
-    return {'comparison.md':'\n'.join(rows)+'\n', 'evidence.md':'\n'.join(evidence)+'\n', 'comparison.tex':fragment, 'comparison-standalone.tex':preamble+standalone+'\\end{document}\n'}
+    return {'comparison.md':'\n'.join(rows).rstrip()+'\n', 'evidence.md':'\n'.join(evidence)+'\n', 'comparison.tex':fragment, 'comparison-standalone.tex':preamble+standalone+'\\end{document}\n'}
 
 
 def render(input_path, criteria_path, output, columns_per_part=6):
