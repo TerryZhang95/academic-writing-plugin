@@ -8,13 +8,14 @@ import shutil
 import subprocess
 from platform_support import safe_path, codex_binary, managed_installation_owned
 from codex_app import App
+from version_check import version
 from connection import CheckError, Connection
 
 PACKAGE = Path(__file__).resolve().parents[1]
 SELECTOR = 'academic-writing@academic-writing-public'
 MARKET = 'academic-writing-public'
 SKILL = 'academic-writing:academic-introduction-mcp'
-SKILLS = (SKILL, 'academic-writing:academic-related-work-mcp', 'academic-writing:academic-system-model-mcp', 'academic-writing:academic-algorithm-mcp', 'academic-writing:academic-results-mcp', 'academic-writing:academic-whole-paper-mcp', 'academic-writing:academic-execution-mcp', 'academic-writing:academic-language-polish-mcp', 'academic-writing:academic-figure-prompt-mcp')
+SKILLS = (SKILL, 'academic-writing:academic-related-work-mcp', 'academic-writing:academic-system-model-mcp', 'academic-writing:academic-algorithm-mcp', 'academic-writing:academic-results-mcp', 'academic-writing:academic-whole-paper-mcp', 'academic-writing:academic-execution-mcp', 'academic-writing:academic-language-polish-mcp', 'academic-writing:academic-figure-prompt-mcp', 'academic-writing:academic-literature-comparison-mcp')
 
 
 def run(codex, args, env):
@@ -34,17 +35,26 @@ def check(destination, codex, env, inventory_only=False):
         state = app.request('plugin/read', {'pluginName': 'academic-writing', 'marketplacePath': str(destination / '.agents/plugins/marketplace.json')})['plugin']
         if not state['summary']['installed'] or not state['summary']['enabled']:
             raise CheckError('Plugin is not installed/enabled. Run install, then refresh Codex.')
-        listing = app.request('skills/list', {'cwds': [str(destination / 'examples')], 'forceReload': True})
-        skills = [s['name'] for entry in listing['data'] for s in entry['skills'] if s['name'] in SKILLS and s['enabled']]
-        if sorted(skills) != sorted(SKILLS):
-            raise CheckError('Thin skill was not discovered. Refresh or restart Codex.')
         installed_version = json.loads((destination / 'plugins/academic-writing/.codex-plugin/plugin.json').read_text(encoding='utf-8'))['version']
+        if version(installed_version) is None:
+            raise CheckError('Invalid installed client version')
+        expected_skills = SKILLS if version(installed_version) >= (0, 1, 15) else SKILLS[:-1]
+        listing = app.request('skills/list', {'cwds': [str(destination / 'examples')], 'forceReload': True})
+        skills = [s['name'] for entry in listing['data'] for s in entry['skills'] if s['name'] in expected_skills and s['enabled']]
+        if sorted(skills) != sorted(expected_skills):
+            raise CheckError('Thin skill was not discovered. Refresh or restart Codex.')
         if state['summary'].get('localVersion') != installed_version:
             raise CheckError('Codex installed version does not match the managed package')
         cached = Path(env['CODEX_HOME']) / 'plugins/cache/academic-writing-public/academic-writing' / installed_version / '.codex-plugin/plugin.json'
         if cached.is_symlink() or not cached.is_file() or json.loads(cached.read_text(encoding='utf-8')).get('version') != installed_version:
             raise CheckError('Codex cached plugin version was not refreshed')
-        report = {'installed': True, 'client_version': installed_version, 'entrypoint': SKILL, 'entrypoints': list(SKILLS), 'model_calls': 0}
+        if version(installed_version) >= (0, 1, 15):
+            for name in ('comparison_io.py', 'comparison_render.py', 'comparison_sources.py', 'comparison_layout.py', 'comparison-contract.md'):
+                source = destination / 'plugins/academic-writing/scripts' / name
+                installed = cached.parent.parent / 'scripts' / name
+                if source.is_symlink() or installed.is_symlink() or not source.is_file() or not installed.is_file() or source.read_bytes() != installed.read_bytes():
+                    raise CheckError('Comparison helper installation/cache is incomplete')
+        report = {'installed': True, 'client_version': installed_version, 'entrypoint': SKILL, 'entrypoints': list(expected_skills), 'model_calls': 0}
         if not inventory_only:
             status = app.request('mcpServerStatus/list', {'limit': 100})
             servers = [s for s in status['data'] if s.get('pluginId') == SELECTOR]

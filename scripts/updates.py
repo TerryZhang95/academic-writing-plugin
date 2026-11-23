@@ -15,8 +15,10 @@ from connection import CheckError
 from platform_support import safe_path, exclusive_lock, managed_installation_owned
 
 ALLOWED = frozenset(['.agents/plugins/marketplace.json', 'README.md', 'compatibility.json', 'plugins/academic-writing/.codex-plugin/plugin.json', 'plugins/academic-writing/.mcp.json', 'plugins/academic-writing/README.md', 'plugins/academic-writing/scripts/abbreviation_review.py', 'plugins/academic-writing/scripts/artifact_review.py', 'plugins/academic-writing/scripts/bridge.py', 'plugins/academic-writing/scripts/context-workflow.md', 'plugins/academic-writing/scripts/context_review.py', 'plugins/academic-writing/scripts/platform_support.py', 'plugins/academic-writing/scripts/preflight.py', 'plugins/academic-writing/scripts/version_check.py', 'plugins/academic-writing/skills/academic-algorithm-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-algorithm-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-execution-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-execution-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-figure-prompt-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-figure-prompt-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-introduction-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-introduction-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-language-polish-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-language-polish-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-related-work-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-related-work-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-results-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-results-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-system-model-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-system-model-mcp/agents/openai.yaml', 'plugins/academic-writing/skills/academic-whole-paper-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-whole-paper-mcp/agents/openai.yaml', 'scripts/codex_app.py', 'scripts/connection.py', 'scripts/manage.py', 'scripts/platform_support.py', 'scripts/run_writing_acceptance.py', 'scripts/updates.py', 'scripts/version_check.py'])
+PRE_COMPARISON_ALLOWED = ALLOWED | {"plugins/academic-writing/scripts/figure_review.py", "plugins/academic-writing/scripts/figure-workflow.md"}
 PRE_FIGURE_ALLOWED = ALLOWED
 ALLOWED = ALLOWED | {"plugins/academic-writing/scripts/figure_review.py", "plugins/academic-writing/scripts/figure-workflow.md"}
+ALLOWED = ALLOWED | {'plugins/academic-writing/scripts/comparison_layout.py', 'COMPARISON-STATUS.md', 'plugins/academic-writing/scripts/comparison_sources.py', 'plugins/academic-writing/skills/academic-literature-comparison-mcp/SKILL.md', 'plugins/academic-writing/skills/academic-literature-comparison-mcp/agents/openai.yaml', 'plugins/academic-writing/scripts/comparison_render.py', 'plugins/academic-writing/scripts/comparison-contract.md', 'plugins/academic-writing/scripts/comparison_io.py'}
 LEGACY_ALLOWED = PRE_FIGURE_ALLOWED - {
     "plugins/academic-writing/scripts/abbreviation_review.py",
     "plugins/academic-writing/scripts/artifact_review.py",
@@ -151,6 +153,8 @@ def extract(data, stage, expected, base):
         members=archive.infolist()
         expected_version = version(expected)
         inventories = [ALLOWED]
+        if expected_version is not None and expected_version <= (0, 1, 14):
+            inventories.append(PRE_COMPARISON_ALLOWED)
         if expected_version is not None and expected_version <= (0, 1, 13):
             inventories.append(LEGACY_ALLOWED)
         inventory = frozenset(i.filename[len('academic-writing/'):] for i in members if i.filename.startswith('academic-writing/'))

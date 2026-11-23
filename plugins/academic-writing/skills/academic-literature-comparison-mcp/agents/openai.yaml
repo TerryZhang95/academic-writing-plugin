@@ -1,0 +1,4 @@
+interface:
+  display_name: "Academic Literature Comparison"
+  short_description: "Build evidence-linked paper comparison tables"
+  default_prompt: "Use $academic-literature-comparison-mcp to compare the specified papers with traceable cell evidence."

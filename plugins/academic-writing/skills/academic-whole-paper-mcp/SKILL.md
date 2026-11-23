@@ -34,3 +34,8 @@ Include `client_contract: "academic-guidance-v1"` in every `get_writing_guidance
 For scoped algorithm writing, use the available algorithm capability and the algorithm entrypoint. Retrieve current algorithm guidance for each requested stage; historical releases are reserved for operator rollback, not task selection.
 
 Every new guidance request uses current service rules. Do not select historical releases or enforce a task-wide constant `library_release`. Record the returned version as provenance. After an update, apply newly retrieved guidance to the requested work without automatically rewriting previously completed material.
+
+For an authorized standalone comparison matrix, use this plugin's
+academic-literature-comparison-mcp entry only after its schema and explicit
+literature_comparison capability checks succeed. Related Work prose is not a
+matrix export. Full-paper bilingual reading remains outside this plugin.
